@@ -1,0 +1,23 @@
+{
+  "title": "FormulAves: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda",
+  "upload_type": "software",
+  "version": "2.0.0",
+  "license": "mit",
+  "language": "spa",
+  "creators": [
+    {
+      "name": "Mojica-Zárate, Héctor Tecumshé"
+    },
+    {
+      "name": "Barrera-Guzmán, Luis Ángel"
+    }
+  ],
+  "description": "Aplicación web de un solo archivo para formular dietas de mínimo costo para pollo de engorda mediante programación lineal (símplex en dos fases con certificado de optimalidad). Incluye líneas genéticas (Ross 308, Arbor Acres Plus, Cobb 500, Hubbard Efficiency Plus, pollo de crecimiento lento, NRC 1994 y perfil personalizado), condiciones de producción, biblioteca de ingredientes editable, programa multifase, informe y validación con dietas publicadas.",
+  "keywords": [
+    "pollo de engorda",
+    "formulación de dietas",
+    "programación lineal",
+    "nutrición animal",
+    "broiler"
+  ]
+}
