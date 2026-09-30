@@ -311,7 +311,8 @@ const CONFIG = {
   anio: 2026,
   autor: 'Mojica-Zárate, H. T., y Barrera-Guzmán, L. A.',      // autores en formato APA 7
   autores: 'Héctor Tecumshé Mojica Zárate y Luis Ángel Barrera Guzmán', // nombres completos (pie de página)
-  repo: 'https://github.com/hectortecumshe-ai/FormulAves'
+  repo: 'https://github.com/hectortecumshe-ai/FormulAves',
+  doi: '10.5281/zenodo.23034431'                                   // DOI de Zenodo (v2.0.0)
 };
 
 /* =====================================================================
@@ -881,7 +882,7 @@ function renderInicio(el){
     </div>
     <div class="cite">
       <div class="k">SI LA USAS EN UN TRABAJO, CÍTALA</div>
-      <p style="margin:0 0 10px" id="citaTxt">${esc(CONFIG.autor)} (${CONFIG.anio}). <i>${CONFIG.app}: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda</i> (Versión ${CONFIG.version}) [Software]. ${esc(CONFIG.repo)}</p>
+      <p style="margin:0 0 10px" id="citaTxt">${esc(CONFIG.autor)} (${CONFIG.anio}). <i>${CONFIG.app}: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda</i> (Versión ${CONFIG.version}) [Software]. <a href="https://doi.org/${CONFIG.doi}" target="_blank" rel="noopener">https://doi.org/${CONFIG.doi}</a></p>
       <button class="btn ghost sm" id="copiarCita">⧉ Copiar referencia</button>
     </div>
   </section>
