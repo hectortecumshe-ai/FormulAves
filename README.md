@@ -21,6 +21,8 @@ La formulación se organiza en bloques, cada uno con su marco teórico:
 7. **Programa multifase**: todas las fases a la vez, con el costo de alimento por ave y por kg de peso vivo.
 8. **Informe**: resumen, impresión en PDF, exportación a CSV y guardado del proyecto.
 
+**Ayuda contextual:** cada parámetro, índice e indicador tiene un signo **?** que, al pasar el mouse (o tocarlo en el celular), muestra su concepto y su escala de decisión.
+
 ## Validación
 
 - Se reprodujeron 8 dietas publicadas en 4 artículos (Rev. Mex. Cienc. Pecu. 2020; *Animals* 2025 ×2; *Poultry* 2022). El error medio en el análisis calculado fue de 0.9 % en energía metabolizable y de 2.7 % en proteína cruda.

@@ -269,6 +269,21 @@ dialog .db{padding:10px 22px 20px}
   .card{box-shadow:none;break-inside:avoid;border-color:#bbb}
   main{max-width:none;padding:0}
 }
+/* ---- ayuda contextual «?» / context help ---- */
+.qh{display:inline-grid;place-items:center;width:17px;height:17px;margin-left:5px;border-radius:50%;font-size:11px;font-weight:700;line-height:1;font-style:normal;
+  color:var(--primary);background:var(--primary-soft);border:1px solid color-mix(in srgb,var(--primary) 35%,transparent);cursor:help;vertical-align:1px;user-select:none;transition:.15s var(--ease)}
+.qh:hover,.qh:focus-visible{background:var(--primary);color:var(--on-primary);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 25%,transparent)}
+#qtip{position:fixed;z-index:120;background:var(--card);color:var(--text);border:1px solid var(--border-strong);border-radius:14px;padding:12px 14px 10px;box-shadow:var(--shadow-lg);
+  font-size:13.5px;line-height:1.45;opacity:0;transform:translateY(4px);pointer-events:none;transition:opacity .15s,transform .15s;border-top:3px solid var(--accent)}
+#qtip.on{opacity:1;transform:none}
+#qtip .qt{display:block;font-size:14.5px;color:var(--primary-dark);margin-bottom:4px}
+#qtip p{margin:0 0 8px}
+#qtip .qe{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+#qtip ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+#qtip li{position:relative;padding-left:16px}
+#qtip li::before{content:"";position:absolute;left:2px;top:.5em;width:8px;height:8px;border-radius:50%;background:var(--info)}
+#qtip li.ok::before{background:var(--ok)} #qtip li.warn::before{background:var(--warn)} #qtip li.bad::before{background:var(--bad)}
+@media print{ .qh,#qtip{display:none!important} }
 </style>
 </head>
 <body>
@@ -758,6 +773,180 @@ function formularPrograma(s){
 </script>
 <script>
 "use strict";
+function T(es){ return es; }
+function tx(o){ return (o&&typeof o==='object'&&'es' in o)?o.es:o; }
+</script>
+<script>
+"use strict";
+/* =====================================================================
+   AYUDA CONTEXTUAL / CONTEXT HELP  (signos «?» con concepto y escala)
+   Cada entrada: c = concepto; s = escala de decisión [nivel, texto]
+   niveles: ok (verde) · warn (ámbar) · bad (rojo) · info (azul)
+   ===================================================================== */
+const E = (es,en)=>({es,en});
+const AYUDA = {
+  /* ---------- nutrientes / nutrients ---------- */
+  EM:{c:E('Energía metabolizable aparente corregida por nitrógeno (EMAn): la energía del alimento que el ave realmente aprovecha. Es el nutriente más caro de la dieta y regula cuánto come el ave.','Nitrogen-corrected apparent metabolizable energy (AMEn): the feed energy the bird can actually use. It is the most expensive nutrient in the diet and controls how much the bird eats.'),
+    s:[['info',E('2,950–3,000 kcal/kg: iniciación típica.','2,950–3,000 kcal/kg: typical starter.')],['ok',E('3,050–3,200 kcal/kg: crecimiento y finalización en líneas rápidas.','3,050–3,200 kcal/kg: grower and finisher in fast-growing lines.')],['warn',E('Más de 3,200: encarece la dieta y engrasa la canal; justifícala por precio del ave.','Above 3,200: costly and fattens the carcass; justify it with bird price.')],['warn',E('Arriba de 1,500 m de altitud conviene bajar 50–100 kcal (ascitis).','Above 1,500 m altitude, lower it by 50–100 kcal (ascites).')]]},
+  PC:{c:E('Proteína cruda = nitrógeno × 6.25. Es un indicador general; lo que el ave necesita en realidad son aminoácidos. Un mínimo de PC asegura nitrógeno para los aminoácidos no esenciales.','Crude protein = nitrogen × 6.25. It is a general indicator; what the bird really needs are amino acids. A CP minimum secures nitrogen for non-essential amino acids.'),
+    s:[['ok',E('21–23 % iniciación · 19–21 % crecimiento · 17–19.5 % finalización.','21–23 % starter · 19–21 % grower · 17–19.5 % finisher.')],['warn',E('1.5–2 puntos sobre la tabla: más amoníaco, cama húmeda y calor metabólico.','1.5–2 points above the table: more ammonia, wet litter and metabolic heat.')],['info',E('Bajar la PC con aminoácidos sintéticos es válido si cubres Val, Ile y Arg.','Lowering CP with synthetic amino acids is fine if Val, Ile and Arg are covered.')]]},
+  Lys:{c:E('Lisina: aminoácido esencial de referencia de la proteína ideal; los demás se expresan como % de ella. Determina en gran medida el rendimiento de pechuga.','Lysine: the reference essential amino acid of the ideal-protein concept; the others are expressed as % of it. Largely drives breast-meat yield.'),
+    s:[['ok',E('Digestible: 1.25–1.32 % iniciación, 1.10–1.18 % crecimiento, 0.95–1.08 % finalización.','Digestible: 1.25–1.32 % starter, 1.10–1.18 % grower, 0.95–1.08 % finisher.')],['bad',E('Bajo el mínimo: menos pechuga y peor conversión.','Below minimum: less breast meat and poorer feed conversion.')],['warn',E('Más de 10 % sobre el mínimo rara vez paga su costo.','More than 10 % above the minimum rarely pays for itself.')]]},
+  Met:{c:E('Metionina: primer aminoácido limitante en dietas de maíz y soya. Interviene en el emplume y en la síntesis de proteína; se suplementa como DL-metionina o su análogo hidroxi.','Methionine: first limiting amino acid in corn–soy diets. Involved in feathering and protein synthesis; supplied as DL-methionine or its hydroxy analogue.'),
+    s:[['ok',E('0.45–0.55 % digestible, según la fase.','0.45–0.55 % digestible, depending on phase.')],['bad',E('Deficiencia: mal emplume, menor crecimiento.','Deficiency: poor feathering, slower growth.')],['info',E('Revisa siempre junto con Met+Cis.','Always check together with Met+Cys.')]]},
+  MC:{c:E('Metionina + cistina: aminoácidos azufrados totales. La cistina puede formarse a partir de metionina, por eso se formulan juntos.','Methionine + cystine: total sulfur amino acids. Cystine can be made from methionine, so both are formulated together.'),
+    s:[['ok',E('74–78 % de la lisina.','74–78 % of lysine.')],['warn',E('Menos de 73 %: limita el crecimiento aunque la lisina sobre.','Below 73 %: limits growth even if lysine is ample.')]]},
+  Thr:{c:E('Treonina: tercer aminoácido limitante; muy demandada por la mucosa intestinal (mucinas). Se suplementa como L-treonina.','Threonine: third limiting amino acid; heavily used by the gut lining (mucins). Supplied as L-threonine.'),
+    s:[['ok',E('65–68 % de la lisina.','65–68 % of lysine.')],['warn',E('Súbela 2–3 puntos con retos intestinales o dietas con subproductos.','Raise 2–3 points under gut challenge or by-product diets.')]]},
+  Trp:{c:E('Triptófano: precursor de serotonina y niacina; regula el consumo y el comportamiento. El maíz es pobre en triptófano.','Tryptophan: precursor of serotonin and niacin; regulates intake and behaviour. Corn is low in tryptophan.'),
+    s:[['ok',E('16–18 % de la lisina.','16–18 % of lysine.')],['warn',E('Vigílalo en dietas bajas en proteína o con mucho maíz o DDGS.','Watch it in low-protein diets or with high corn or DDGS.')]]},
+  Arg:{c:E('Arginina: el ave no la sintetiza (carece de ciclo de la urea), así que es esencial. Compite con la lisina: un exceso de lisina aumenta su necesidad.','Arginine: birds cannot synthesize it (no urea cycle), so it is essential. It competes with lysine: excess lysine raises its requirement.'),
+    s:[['ok',E('105–110 % de la lisina.','105–110 % of lysine.')],['warn',E('Súbela en estrés por calor y en dietas bajas en soya.','Raise it under heat stress and in low-soy diets.')]]},
+  Ile:{c:E('Isoleucina: aminoácido de cadena ramificada; se vuelve limitante en dietas bajas en proteína o con harina de sangre.','Isoleucine: branched-chain amino acid; becomes limiting in low-protein diets or with blood meal.'),
+    s:[['ok',E('67–70 % de la lisina.','67–70 % of lysine.')],['warn',E('Revisa al reducir la PC más de 1.5 puntos.','Check it when lowering CP by more than 1.5 points.')]]},
+  Val:{c:E('Valina: cuarto o quinto limitante en dietas de maíz y soya reducidas en proteína. Se suplementa como L-valina.','Valine: fourth or fifth limiting in reduced-protein corn–soy diets. Supplied as L-valine.'),
+    s:[['ok',E('76–80 % de la lisina.','76–80 % of lysine.')],['warn',E('Menos de 75 %: puede frenar el crecimiento en dietas de baja PC.','Below 75 %: may limit growth in low-CP diets.')]]},
+  Ca:{c:E('Calcio: forma el hueso junto con el fósforo. Su exceso reduce la absorción de fósforo, zinc y grasa (forma jabones) y humedece la cama.','Calcium: builds bone together with phosphorus. Excess reduces absorption of phosphorus, zinc and fat (forms soaps) and wets the litter.'),
+    s:[['ok',E('0.90–1.00 % iniciación · 0.75–0.85 % crecimiento · 0.60–0.75 % finalización.','0.90–1.00 % starter · 0.75–0.85 % grower · 0.60–0.75 % finisher.')],['warn',E('Por encima del máximo o con Ca:P > 2.3: pérdida de fósforo y de energía.','Above the maximum or with Ca:P > 2.3: phosphorus and energy losses.')]]},
+  Pd:{c:E('Fósforo disponible (no fítico): la fracción que el ave absorbe. El fósforo de los granos está unido al fitato; la fitasa libera parte de él.','Available (non-phytate) phosphorus: the fraction the bird absorbs. Grain phosphorus is bound to phytate; phytase releases part of it.'),
+    s:[['ok',E('0.45–0.50 % iniciación → 0.35–0.40 % finalización.','0.45–0.50 % starter → 0.35–0.40 % finisher.')],['bad',E('Deficiencia: problemas de patas y raquitismo.','Deficiency: leg problems and rickets.')],['warn',E('Exceso: caro y contaminante (fósforo en excretas).','Excess: costly and polluting (phosphorus in manure).')]]},
+  Na:{c:E('Sodio: regula el consumo de agua y de alimento. Viene de la sal y del bicarbonato de sodio.','Sodium: regulates water and feed intake. Comes from salt and sodium bicarbonate.'),
+    s:[['bad',E('Menos de 0.15 %: menor consumo y crecimiento.','Below 0.15 %: lower intake and growth.')],['ok',E('0.16–0.23 %.','0.16–0.23 %.')],['warn',E('Más de 0.25 %: más consumo de agua y cama húmeda.','Above 0.25 %: more water intake and wet litter.')]]},
+  Cl:{c:E('Cloro: acompaña al sodio en la sal. Participa en el equilibrio ácido-base; su exceso baja el balance electrolítico.','Chloride: comes with sodium in salt. Takes part in acid–base balance; excess lowers the electrolyte balance.'),
+    s:[['ok',E('0.16–0.30 %.','0.16–0.30 %.')],['warn',E('Cerca del máximo: sustituye parte de la sal por bicarbonato de sodio.','Near the maximum: replace part of the salt with sodium bicarbonate.')]]},
+  K:{c:E('Potasio: electrolito abundante en la soya. Casi nunca falta; importa por su efecto en el balance electrolítico.','Potassium: electrolyte abundant in soybean meal. Rarely deficient; matters for its effect on electrolyte balance.'),
+    s:[['ok',E('0.60–0.95 %.','0.60–0.95 %.')],['warn',E('Más de 1.1 %: heces húmedas.','Above 1.1 %: wet droppings.')]]},
+  AL:{c:E('Ácido linoleico: ácido graso esencial (omega-6). El maíz y los aceites vegetales lo aportan; falta en dietas de sorgo o trigo sin aceite.','Linoleic acid: essential (omega-6) fatty acid. Supplied by corn and vegetable oils; lacking in sorghum or wheat diets without oil.'),
+    s:[['ok',E('1.0–1.25 % o más.','1.0–1.25 % or more.')],['bad',E('Menos de 1.0 %: menor crecimiento; agrega aceite vegetal.','Below 1.0 %: slower growth; add vegetable oil.')]]},
+  EE:{c:E('Extracto etéreo: la grasa total de la dieta. Aporta energía concentrada con poco calor metabólico, pero afecta la calidad del pellet y puede enranciarse.','Ether extract: total dietary fat. Supplies concentrated energy with little metabolic heat, but affects pellet quality and may turn rancid.'),
+    s:[['ok',E('3–6 %.','3–6 %.')],['warn',E('Más de 7 %: pellet frágil; usa antioxidante y aplicación poscondicionado.','Above 7 %: weak pellets; use antioxidant and post-pellet coating.')]]},
+  FC:{c:E('Fibra cruda: la parte menos digestible. Diluye la energía, aunque un poco estimula la molleja.','Crude fiber: the least digestible fraction. Dilutes energy, although a little stimulates the gizzard.'),
+    s:[['ok',E('2.5–4 %.','2.5–4 %.')],['warn',E('Más de 5 %: baja la energía útil y el consumo.','Above 5 %: lowers usable energy and intake.')]]},
+  Xan:{c:E('Xantofilas: pigmentos amarillos (luteína, zeaxantina) que colorean piel y grasa. Solo importan en mercados de pollo amarillo.','Xanthophylls: yellow pigments (lutein, zeaxanthin) that colour skin and fat. Only matter in yellow-skin markets.'),
+    s:[['info',E('Pollo blanco: sin requerimiento.','White-skin broiler: no requirement.')],['ok',E('Mercado amarillo: 50–90 mg/kg en finalización, según el color que pida el comprador.','Yellow market: 50–90 mg/kg in the finisher, depending on buyer colour.')],['info',E('Aplica 2–3 semanas antes de la venta para que el color se fije.','Apply 2–3 weeks before market so the colour is deposited.')]]},
+  DEB:{c:E('Balance electrolítico o de Mongin: Na + K − Cl en mEq/kg. Resume el equilibrio ácido-base de la dieta.','Dietary electrolyte (Mongin) balance: Na + K − Cl in mEq/kg. Summarizes the diet’s acid–base balance.'),
+    s:[['bad',E('Menos de 180: menor crecimiento.','Below 180: slower growth.')],['ok',E('200–300; óptimo cercano a 250.','200–300; optimum near 250.')],['warn',E('Estrés por calor: 250–300. Más de 300: cama húmeda.','Heat stress: 250–300. Above 300: wet litter.')]]},
+
+  /* ---------- bloque 1–2 / blocks 1–2 ---------- */
+  linea:{c:E('Cada línea genética crece a distinta velocidad y su casa genética publica especificaciones propias. Las tablas no son intercambiables.','Each genetic line grows at a different rate and its breeder publishes its own specifications. Tables are not interchangeable.'),
+    s:[['ok',E('Usa la tabla de la línea que realmente alojas.','Use the table of the line you actually house.')],['info',E('Líneas no incluidas: elige Personalizado y captura sus valores.','Lines not included: choose Custom and enter their values.')]]},
+  base:{c:E('Aminoácidos digestibles (ileales estandarizados) o totales. Las tablas modernas usan base digestible; NRC (1994) usa totales. Requerimientos e ingredientes deben estar en la misma base.','Digestible (standardized ileal) or total amino acids. Modern tables use the digestible basis; NRC (1994) uses total. Requirements and ingredients must share the same basis.'),
+    s:[['ok',E('Digestible: más preciso con ingredientes alternativos.','Digestible: more accurate with alternative ingredients.')],['bad',E('Nunca mezcles bases distintas.','Never mix different bases.')]]},
+  sexo:{c:E('Los machos crecen más y requieren más aminoácidos por kg de alimento que las hembras; los lotes mixtos usan un promedio.','Males grow faster and need more amino acids per kg of feed than females; mixed flocks use an average.'),
+    s:[['info',E('Separar por sexo permite ahorrar en hembras (≈3–5 % menos aminoácidos).','Sex-separate rearing saves on females (≈3–5 % fewer amino acids).')]]},
+  consumo:{c:E('Kilogramos de alimento que come cada ave durante la fase. Se usa para calcular el costo por ave y el alimento del lote.','Kilograms of feed each bird eats during the phase. Used to compute cost per bird and flock feed needs.'),
+    s:[['ok',E('Usa tus registros de granja; la guía de la línea es solo una referencia.','Use your farm records; the breed guide is only a reference.')]]},
+  ganancia:{c:E('Kilogramos de peso vivo que gana cada ave en la fase.','Kilograms of live weight each bird gains during the phase.'),
+    s:[['info',E('Junto con el consumo da la conversión alimenticia.','Together with intake it gives feed conversion.')]]},
+  fcr:{c:E('Conversión alimenticia: kg de alimento por kg de peso ganado. Menos es mejor. Es el índice económico más importante de la engorda.','Feed conversion ratio: kg of feed per kg of weight gained. Lower is better. It is the key economic index in broiler production.'),
+    s:[['ok',E('Iniciación ≈1.1–1.3; finalización ≈1.8–2.1; ciclo ≈1.5–1.7.','Starter ≈1.1–1.3; finisher ≈1.8–2.1; cycle ≈1.5–1.7.')],['warn',E('0.05 o más sobre el objetivo de la línea: revisa dieta, salud y ambiente.','0.05 or more above the line target: review diet, health and environment.')]]},
+  ideal:{c:E('Perfil de proteína ideal: cada aminoácido como % de la lisina. El aminoácido más deficiente respecto al perfil limita todo el crecimiento.','Ideal-protein profile: each amino acid as % of lysine. The amino acid most deficient against the profile limits all growth.'),
+    s:[['ok',E('Iguala o supera la referencia de cada aminoácido.','Match or exceed each amino acid reference.')],['bad',E('Uno bajo el perfil desperdicia los demás.','One below the profile wastes all the others.')]]},
+  minmax:{c:E('Mínimo y máximo de cada nutriente: son las restricciones del modelo. Una casilla vacía no restringe.','Minimum and maximum of each nutrient: the model’s constraints. An empty cell imposes no constraint.'),
+    s:[['ok',E('Fija mínimos en lo que el ave necesita.','Set minimums on what the bird needs.')],['warn',E('Pon máximos solo cuando el exceso daña (Na, Cl, Ca, fibra, grasa).','Set maximums only where excess harms (Na, Cl, Ca, fiber, fat).')],['bad',E('Demasiadas restricciones pueden dejar el problema sin solución.','Too many constraints can make the problem infeasible.')]]},
+
+  /* ---------- bloque 3 / block 3 ---------- */
+  altitud:{c:E('Metros sobre el nivel del mar de la granja. A mayor altitud hay menos oxígeno y el corazón del ave trabaja más (síndrome ascítico).','Farm elevation above sea level. Higher altitude means less oxygen and a harder-working heart (ascites syndrome).'),
+    s:[['ok',E('Menos de 1,000 m: sin ajuste.','Below 1,000 m: no adjustment.')],['warn',E('1,000–1,500 m: vigila ventilación y mortalidad.','1,000–1,500 m: watch ventilation and mortality.')],['bad',E('Más de 1,500 m: reduce densidad energética y considera restricción temprana.','Above 1,500 m: reduce energy density and consider early restriction.')]]},
+  temp:{c:E('Temperatura media dentro de la caseta en la fase. Para aves de más de 3 semanas la zona de confort es de 18 a 24 °C.','Mean in-house temperature during the phase. For birds over 3 weeks the comfort zone is 18–24 °C.'),
+    s:[['info',E('Menos de 18 °C: el ave come más para calentarse.','Below 18 °C: birds eat more to keep warm.')],['ok',E('18–27 °C: normal.','18–27 °C: normal.')],['bad',E('30 °C o más: estrés por calor; sube densidad y balance electrolítico.','30 °C or more: heat stress; raise density and electrolyte balance.')]]},
+  aves:{c:E('Número de aves del lote. Sirve para calcular el alimento total y su costo.','Number of birds in the flock. Used to compute total feed and its cost.'),
+    s:[['info',E('Resta la mortalidad esperada para un cálculo más fino.','Subtract expected mortality for a finer estimate.')]]},
+  bache:{c:E('Capacidad de tu mezcladora en kg. La app convierte los porcentajes en kg a pesar por bache.','Your mixer capacity in kg. The app turns percentages into kg to weigh per batch.'),
+    s:[['warn',E('Ingredientes de menos de 0.5 % mézclalos antes en una premezcla.','Pre-mix ingredients below 0.5 % first.')],['ok',E('Busca un coeficiente de variación de mezclado menor a 10 %.','Aim for a mixing coefficient of variation below 10 %.')]]},
+
+  /* ---------- bloque 4–5 / blocks 4–5 ---------- */
+  MS:{c:E('Materia seca: lo que queda al quitar el agua. Los valores de la matriz están tal como se ofrece (≈88–90 % MS).','Dry matter: what remains after removing water. Matrix values are as-fed (≈88–90 % DM).'),
+    s:[['warn',E('Grano con más de 14 % de humedad: diluye nutrientes y favorece hongos.','Grain above 14 % moisture: dilutes nutrients and invites moulds.')]]},
+  precio:{c:E('Precio por kg puesto en granja: incluye flete, mermas y manejo. Es lo que el modelo minimiza.','Price per kg delivered to the farm: includes freight, shrink and handling. It is what the model minimizes.'),
+    s:[['warn',E('Si un precio cambia más de 5 %, vuelve a formular.','If a price changes more than 5 %, reformulate.')]]},
+  incl:{c:E('Límites de inclusión: % mínimo y máximo que puede usarse de un ingrediente por razones prácticas, de calidad o de salud.','Inclusion limits: minimum and maximum % of an ingredient allowed for practical, quality or health reasons.'),
+    s:[['ok',E('Mismo valor en mínimo y máximo = inclusión fija (premezcla, coccidiostato).','Same value as min and max = fixed inclusion (premix, coccidiostat).')],['warn',E('Aceite ≤ 5–6 % por pellet; DDGS ≤ 10 % en iniciación.','Oil ≤ 5–6 % for pellets; DDGS ≤ 10 % in starter.')],['info',E('Revisa el efecto de cada límite en el análisis de sensibilidad.','Check each limit’s effect in the sensitivity analysis.')]]},
+  pkcal:{c:E('Costo de 1,000 kcal de EM aportadas por el ingrediente. Compara fuentes de energía.','Cost of 1,000 kcal of ME supplied by the ingredient. Compares energy sources.'),
+    s:[['ok',E('El más bajo es tu fuente de energía más barata.','The lowest is your cheapest energy source.')]]},
+  ppc:{c:E('Costo de 1 kg de proteína cruda aportada por el ingrediente. Compara fuentes de proteína.','Cost of 1 kg of crude protein supplied by the ingredient. Compares protein sources.'),
+    s:[['ok',E('El más bajo es tu proteína más barata, si su calidad de aminoácidos es buena.','The lowest is your cheapest protein, provided its amino-acid quality is good.')]]},
+
+  /* ---------- bloque 6 / block 6 ---------- */
+  cert:{c:E('Certificado de optimalidad: por dualidad fuerte, el costo de la fórmula (primal) debe igualar el valor del problema dual. La brecha y la violación miden el error numérico.','Optimality certificate: by strong duality, the formula cost (primal) must equal the dual value. The gap and violation measure numerical error.'),
+    s:[['ok',E('Brecha y violación menores a 1×10⁻⁶: óptimo garantizado.','Gap and violation below 1×10⁻⁶: guaranteed optimum.')],['warn',E('Mayores: revisa datos con escalas muy distintas.','Larger: check data with very different scales.')]]},
+  costoT:{c:E('Costo del alimento por tonelada con tus precios. Es lo que el modelo hace mínimo.','Feed cost per tonne at your prices. It is what the model minimizes.'),
+    s:[['info',E('No compares dietas solo por esto: una dieta barata puede empeorar la conversión.','Do not compare diets on this alone: a cheap diet may worsen feed conversion.')]]},
+  costoAve:{c:E('Costo del alimento que come cada ave en la fase = costo por kg × consumo.','Cost of the feed each bird eats in the phase = cost per kg × intake.'),
+    s:[['info',E('Úsalo para presupuestar el lote.','Use it to budget the flock.')]]},
+  costoKgGan:{c:E('Costo de alimento por kg de peso ganado = costo por kg × conversión. Es el mejor criterio económico para comparar dietas.','Feed cost per kg of weight gained = cost per kg × FCR. The best economic criterion to compare diets.'),
+    s:[['ok',E('Prefiere la dieta con el valor más bajo, aunque su costo por tonelada sea mayor.','Prefer the diet with the lowest value, even if its cost per tonne is higher.')]]},
+  loteAlim:{c:E('Toneladas de alimento que necesita el lote en la fase y su costo.','Tonnes of feed the flock needs in the phase and their cost.'),
+    s:[['info',E('Úsalo para programar compras y producción.','Use it to plan purchasing and milling.')]]},
+  cumpl:{c:E('Aporte de la dieta como % del requerimiento mínimo. La línea vertical marca el 100 %.','Diet supply as % of the minimum requirement. The vertical line marks 100 %.'),
+    s:[['ok',E('100–112 %: ajustado.','100–112 %: tight.')],['warn',E('Más de 112 % (barra dorada): exceso; solo es aceptable si viene «gratis» con otro nutriente.','Above 112 % (gold bar): excess; only acceptable if it comes “free” with another nutrient.')]]},
+  estado:{c:E('Una restricción limitante (activa) es la que fija el costo: el nutriente quedó justo en su mínimo o máximo.','A binding (active) constraint is the one setting the cost: the nutrient sits exactly at its minimum or maximum.'),
+    s:[['info',E('Los nutrientes limitantes son los que conviene revisar primero.','Binding nutrients are the ones to review first.')]]},
+  marg:{c:E('Precio sombra: cuánto cambia el costo por tonelada si el requerimiento sube 1 %. Viene de la solución dual del modelo.','Shadow price: how much the cost per tonne changes if the requirement rises 1 %. Comes from the model’s dual solution.'),
+    s:[['info',E('Cero: ese nutriente sale gratis.','Zero: that nutrient comes free.')],['warn',E('Alto: ese requerimiento es caro; confirma que esté bien justificado.','High: that requirement is expensive; make sure it is well justified.')]]},
+  CaP:{c:E('Relación calcio : fósforo disponible. Ambos minerales se absorben y depositan juntos en el hueso.','Calcium : available phosphorus ratio. Both minerals are absorbed and deposited in bone together.'),
+    s:[['ok',E('1.8–2.1 : 1.','1.8–2.1 : 1.')],['warn',E('Menos de 1.7 o más de 2.3: revisa fuentes de Ca y P.','Below 1.7 or above 2.3: review Ca and P sources.')]]},
+  EMPC:{c:E('Relación energía : proteína (kcal de EM por cada 1 % de PC). Indica si la dieta favorece músculo o grasa.','Energy : protein ratio (kcal ME per 1 % CP). Shows whether the diet favours muscle or fat.'),
+    s:[['info',E('≈130–140 en iniciación; ≈155–175 en finalización.','≈130–140 in starter; ≈155–175 in finisher.')],['warn',E('Muy alta: canal más grasa. Muy baja: proteína desperdiciada.','Too high: fatter carcass. Too low: wasted protein.')]]},
+  MCLys:{c:E('Metionina + cistina como % de la lisina (proteína ideal).','Methionine + cystine as % of lysine (ideal protein).'), s:[['ok',E('74–78.','74–78.')],['warn',E('Menos de 73: limitante.','Below 73: limiting.')]]},
+  ThrLys:{c:E('Treonina como % de la lisina (proteína ideal).','Threonine as % of lysine (ideal protein).'), s:[['ok',E('65–68.','65–68.')],['warn',E('Menos de 64: limitante.','Below 64: limiting.')]]},
+  ValLys:{c:E('Valina como % de la lisina (proteína ideal).','Valine as % of lysine (ideal protein).'), s:[['ok',E('76–80.','76–80.')],['warn',E('Menos de 75: limitante.','Below 75: limiting.')]]},
+  ArgLys:{c:E('Arginina como % de la lisina (proteína ideal).','Arginine as % of lysine (ideal protein).'), s:[['ok',E('105–110.','105–110.')],['warn',E('Menos de 104: limitante, sobre todo con calor.','Below 104: limiting, especially under heat.')]]},
+  pellet:{c:E('Grasa total de la dieta y su efecto en la dureza y durabilidad del pellet.','Total dietary fat and its effect on pellet hardness and durability.'),
+    s:[['ok',E('Menos de 7 %: buen pellet.','Below 7 %: good pellets.')],['warn',E('7 % o más: agrega la grasa después de peletizar.','7 % or more: add fat after pelleting.')]]},
+  entrada:{c:E('Precio de entrada: el precio al que un ingrediente no usado empezaría a entrar a la fórmula (precio actual menos su costo reducido).','Entry price: the price at which an unused ingredient would start entering the formula (current price minus its reduced cost).'),
+    s:[['ok',E('Si tu proveedor te lo ofrece a ese precio o menos, vuelve a formular.','If your supplier offers it at that price or lower, reformulate.')],['info',E('Úsalo para negociar compras.','Use it to negotiate purchases.')]]},
+  limEf:{c:E('Efecto de mover un límite de inclusión 1 punto porcentual, en costo por tonelada.','Effect on cost per tonne of moving an inclusion limit by one percentage point.'),
+    s:[['warn',E('Negativo: relajar ese límite abarata la dieta; confirma que el límite esté justificado.','Negative: relaxing that limit makes the diet cheaper; confirm the limit is justified.')],['info',E('Positivo: el límite obliga a usar un ingrediente caro.','Positive: the limit forces an expensive ingredient.')]]},
+  evaluar:{c:E('Compara una fórmula que ya usas contra los requerimientos y contra la fórmula óptima.','Compares a formula you already use against the requirements and against the optimal formula.'),
+    s:[['info',E('La diferencia por tonelada × toneladas al año = ahorro posible.','Difference per tonne × tonnes per year = possible savings.')]]},
+
+  /* ---------- bloque 7 / block 7 ---------- */
+  costoCiclo:{c:E('Costo total del alimento que consume cada ave de la primera a la última fase.','Total cost of the feed each bird eats from the first to the last phase.'),
+    s:[['info',E('Suele ser 60–70 % del costo de producción del pollo.','Usually 60–70 % of broiler production cost.')]]},
+  costoKgPV:{c:E('Costo de alimento por kg de peso vivo producido en el ciclo.','Feed cost per kg of live weight produced over the cycle.'),
+    s:[['ok',E('Es el número que se compara contra el precio de venta del pollo.','It is the number to compare against the broiler sale price.')]]},
+  promPond:{c:E('Costo por tonelada promedio del programa, ponderado por lo que se consume de cada fase.','Average cost per tonne of the program, weighted by how much of each phase is eaten.'),
+    s:[['info',E('Las fases finales pesan más porque ahí se consume más alimento.','Later phases weigh more because most feed is eaten there.')]]},
+  reparto:{c:E('Parte del gasto total de alimento que corresponde a cada fase.','Share of total feed spending that goes to each phase.'),
+    s:[['ok',E('Concentra la negociación de precios en las fases que más pesan.','Focus price negotiation on the heaviest phases.')]]},
+
+  /* ---------- validación / validation ---------- */
+  mape:{c:E('Error absoluto medio porcentual (MAPE) entre el análisis calculado que publica cada artículo y el que calcula la app.','Mean absolute percentage error (MAPE) between the calculated analysis each paper reports and the one the app computes.'),
+    s:[['ok',E('Menos de 3 %: concordancia excelente.','Below 3 %: excellent agreement.')],['info',E('3–8 %: aceptable; se explica por diferencias de matriz de ingredientes.','3–8 %: acceptable; explained by ingredient-matrix differences.')],['warn',E('Más de 10 %: revisar datos.','Above 10 %: check the data.')]]},
+  reform:{c:E('Prueba del optimizador: se pide la dieta más barata que aporte al menos lo mismo que la fórmula publicada. Debe dar una igual o más barata.','Optimizer test: ask for the cheapest diet supplying at least as much as the published formula. It must return one that is equal or cheaper.'),
+    s:[['ok',E('Igual o más barata: el optimizador es correcto.','Equal or cheaper: the optimizer is correct.')],['bad',E('Más cara: habría un error.','More expensive: there would be an error.')]]}
+};
+/* botón «?» / “?” button */
+function ayuda(k){ return AYUDA[k] ? `<span class="qh" tabindex="0" role="button" data-q="${k}" aria-label="${T('Ayuda','Help')}">?</span>` : ''; }
+function ayudaHTML(k, titulo){
+  const a = AYUDA[k]; if(!a) return '';
+  return `${titulo?`<b class="qt">${titulo}</b>`:''}<p>${tx(a.c)}</p><div class="qe">${T('Escala de decisión','Decision scale')}</div><ul>${a.s.map(([n,t])=>`<li class="${n}">${tx(t)}</li>`).join('')}</ul>`;
+}
+(function(){
+  let tip=null, cur=null;
+  function show(el){
+    if(!tip){ tip=document.createElement('div'); tip.id='qtip'; tip.setAttribute('role','tooltip'); document.body.appendChild(tip); }
+    const k=el.dataset.q; const tit = el.dataset.qt || (el.closest('td,th,label,h3,h4,.kpi .l,.l,.f')||{}).innerText || '';
+    tip.innerHTML = ayudaHTML(k, (NUT[k]?tx(NUT[k].n):tit.replace(/\?/g,'').trim()).slice(0,90)); cur=el;
+    tip.classList.add('on'); show.t=Date.now();
+    const r=el.getBoundingClientRect(), w=Math.min(330, window.innerWidth-24); tip.style.width=w+'px';
+    let x=r.left+r.width/2-w/2; x=Math.max(12,Math.min(x,window.innerWidth-w-12));
+    const h=tip.offsetHeight; let y=r.bottom+8; if(y+h>window.innerHeight-8) y=Math.max(8,r.top-h-8);
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  }
+  function hide(){ if(tip){ tip.classList.remove('on'); } cur=null; }
+  document.addEventListener('mouseover',e=>{ const el=e.target.closest&&e.target.closest('.qh'); if(el) show(el); });
+  document.addEventListener('mouseout',e=>{ const el=e.target.closest&&e.target.closest('.qh'); if(el && !(e.relatedTarget&&el.contains(e.relatedTarget))) hide(); });
+  document.addEventListener('focusin',e=>{ const el=e.target.closest&&e.target.closest('.qh'); if(el) show(el); });
+  document.addEventListener('focusout',e=>{ if(e.target.classList&&e.target.classList.contains('qh')) hide(); });
+  document.addEventListener('click',e=>{ const el=e.target.closest&&e.target.closest('.qh'); if(el){ e.preventDefault(); e.stopPropagation(); show(el); } else hide(); }, true);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') hide(); });
+  window.addEventListener('scroll',()=>{ if(cur && Date.now()-(show.t||0)>400) hide(); },{passive:true});
+})();
+</script>
+<script>
+"use strict";
 /* =====================================================================
    6. BLOQUES
    ===================================================================== */
@@ -896,7 +1085,7 @@ function renderGenetica(el){
   el.innerHTML = `${cabecera('genetica','La línea genética define la velocidad de crecimiento y, con ella, la concentración de nutrientes que debe tener el alimento. Cada casa genética publica sus especificaciones; para otras aves puedes capturar tus propios valores.')}
   ${teoriaDe(['fuentes','genetica'])}
   <div class="card">
-    <h3>Línea genética</h3>
+    <h3>Línea genética${ayuda('linea')}</h3>
     <div class="opts">${Object.entries(GENETICAS).map(([k,g])=>`
       <label class="opt ${S.genetica===k?'sel':''}"><input type="radio" name="gen" value="${k}" ${S.genetica===k?'checked':''}>
       <b>${esc(g.nombre)}</b><small>${esc(g.empresa)} · ${esc(g.tipo)} · AA ${g.base==='dig'?'digestibles':'totales'}</small>
@@ -904,7 +1093,7 @@ function renderGenetica(el){
     </div>
   </div>
   <div class="card">
-    <h3>Sexo de las aves</h3>
+    <h3>Sexo de las aves${ayuda('sexo')}</h3>
     <div class="opts">${Object.entries(SEXOS).map(([k,x])=>`
       <label class="opt ${S.sexo===k?'sel':''}"><input type="radio" name="sexo" value="${k}" ${S.sexo===k?'checked':''}>
       <b>${esc(x.n)}</b><small>${esc(x.d)}</small></label>`).join('')}
@@ -922,7 +1111,7 @@ function renderEtapa(el){
   const g = GENETICAS[S.genetica], lista = fasesDe(S.genetica);
   const filas = NUTRIENTES.map(nu=>{
     const r = S.req[nu.k]||[null,null];
-    return `<tr><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${g.base==='dig'?'dig.':'total'})</span>`:''}</td><td class="muted">${nu.u}</td>
+    return `<tr><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${g.base==='dig'?'dig.':'total'})</span>`:''}${ayuda(nu.k)}</td><td class="muted">${nu.u}</td>
       <td class="r"><input class="num" data-req="${nu.k}" data-l="0" value="${r[0]??''}" placeholder="—" aria-label="mínimo ${esc(nu.n)}"></td>
       <td class="r"><input class="num" data-req="${nu.k}" data-l="1" value="${r[1]??''}" placeholder="—" aria-label="máximo ${esc(nu.n)}"></td>
       <td class="r muted">${nu.aa && r[0] && S.req.Lys[0] ? fmt(100*r[0]/S.req.Lys[0],0) : ''}</td></tr>`;
@@ -939,9 +1128,9 @@ function renderEtapa(el){
   <div class="card">
     <h3>Desempeño esperado en la fase <span class="muted small">(para costo por ave; edítalo con tus registros)</span></h3>
     <div class="grid g3">
-      <label class="f">Consumo de alimento por ave (kg)<input id="consumo" value="${S.consumo??''}" inputmode="decimal"></label>
-      <label class="f">Ganancia de peso por ave (kg)<input id="ganancia" value="${S.ganancia??''}" inputmode="decimal"></label>
-      <label class="f">Conversión alimenticia esperada<input disabled id="ca" value="${S.consumo&&S.ganancia?fmt(S.consumo/S.ganancia,2):'—'}"></label>
+      <label class="f"><span>Consumo de alimento por ave (kg)${ayuda('consumo')}</span><input id="consumo" value="${S.consumo??''}" inputmode="decimal"></label>
+      <label class="f"><span>Ganancia de peso por ave (kg)${ayuda('ganancia')}</span><input id="ganancia" value="${S.ganancia??''}" inputmode="decimal"></label>
+      <label class="f"><span>Conversión alimenticia esperada${ayuda('fcr')}</span><input disabled id="ca" value="${S.consumo&&S.ganancia?fmt(S.consumo/S.ganancia,2):'—'}"></label>
     </div>
   </div>
   <div class="card">
@@ -951,7 +1140,7 @@ function renderEtapa(el){
     </div>
     <p class="small muted" style="margin-top:0">Deja la casilla vacía para no restringir. Sexo: <b>${esc(SEXOS[S.sexo].n)}</b>. La última columna es el perfil de <b>proteína ideal</b>: cada aminoácido como % de la lisina.${S.genetica==='personal'?' <b>Perfil personalizado:</b> lo que captures aquí se guarda para esta fase.':''}</p>
     <div class="tbl"><table>
-      <thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mínimo</th><th class="r">Máximo</th><th class="r">% de Lis</th></tr></thead>
+      <thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mínimo${ayuda('minmax')}</th><th class="r">Máximo</th><th class="r">% de Lis${ayuda('ideal')}</th></tr></thead>
       <tbody>${filas}</tbody></table></div>
   </div>
   ${siguiente('etapa')}`;
@@ -977,14 +1166,14 @@ function renderCondiciones(el){
   el.innerHTML = `${cabecera('condiciones','El ambiente y el mercado cambian lo que conviene formular. Este bloque no modifica nada por sí solo: te recomienda y tú decides si aplicarlo.')}
   ${teoriaDe(['ambiente','pigmento'])}
   <div class="card"><div class="grid g3">
-    <label class="f">Altitud de la granja (msnm)<input type="number" id="c_alt" value="${c.altitud}"></label>
-    <label class="f">Temperatura media en la caseta (°C)<input type="number" id="c_temp" value="${c.temp}"></label>
-    <label class="f">Número de aves en el lote<input type="number" id="c_aves" value="${c.aves}"></label>
-    <label class="f">Tamaño de la mezcla o bache (kg)<input type="number" id="c_lote" value="${c.lote}"><span class="h">Capacidad de tu mezcladora</span></label>
+    <label class="f"><span>Altitud de la granja (msnm)${ayuda('altitud')}</span><input type="number" id="c_alt" value="${c.altitud}"></label>
+    <label class="f"><span>Temperatura media en la caseta (°C)${ayuda('temp')}</span><input type="number" id="c_temp" value="${c.temp}"></label>
+    <label class="f"><span>Número de aves en el lote${ayuda('aves')}</span><input type="number" id="c_aves" value="${c.aves}"></label>
+    <label class="f"><span>Tamaño de la mezcla o bache (kg)${ayuda('bache')}</span><input type="number" id="c_lote" value="${c.lote}"><span class="h">Capacidad de tu mezcladora</span></label>
     <label class="f">Moneda (símbolo)<input id="c_mon" value="${esc(S.moneda)}" maxlength="4"></label>
     <div class="f" style="font-size:14px;color:var(--muted)">Mercado
       <label class="row" style="color:var(--text);gap:8px"><input type="checkbox" id="c_pig" ${c.pigmentado?'checked':''}> Pollo pigmentado (piel amarilla)</label>
-      <span class="row" style="gap:6px">Xantofilas objetivo <input class="num" id="c_xan" value="${c.xanObj}"> mg/kg</span></div>
+      <span class="row" style="gap:6px">Xantofilas objetivo${ayuda('Xan')} <input class="num" id="c_xan" value="${c.xanObj}"> mg/kg</span></div>
   </div></div>
   ${rec.map(r=>`<div class="alert ${r.t}"><b>${esc(r.h)}</b><p>${esc(r.p)}</p>${r.btn?`<button class="btn sm ghost" data-aplica="${r.btn}">${esc(r.bl)}</button>`:''}</div>`).join('')}
   ${siguiente('condiciones')}`;
@@ -1019,7 +1208,7 @@ function renderIngredientes(el){
   }).join('');
   el.innerHTML = `${cabecera('ingredientes','Marca los ingredientes que realmente puedes conseguir. Los valores vienen de tablas; si tienes análisis de laboratorio de tus materias primas, cámbialos con el botón Editar.')}
   ${teoriaDe(['ingredientes'])}
-  <div class="alert info small">Seleccionados: <b>${nSel}</b>. Aminoácidos en base <b>${base==='dig'?'digestible':'total'}</b> (según la línea elegida). Valores en base tal como se ofrece (≈88–90 % de materia seca).</div>
+  <div class="alert info small">Seleccionados: <b>${nSel}</b>. Aminoácidos en base <b>${base==='dig'?'digestible':'total'}</b>${ayuda('base')} (según la línea elegida). Valores en base tal como se ofrece (≈88–90 % de materia seca).</div>
   <div class="card hide" id="detalle"></div>
   <div class="card">
     <div class="row between" style="margin-bottom:10px">
@@ -1027,7 +1216,7 @@ function renderIngredientes(el){
       <span class="row"><input id="nuevoNombre" placeholder="Nombre del nuevo ingrediente" style="max-width:250px"><button class="btn sm" id="nuevo">+ Agregar</button></span>
     </div>
     <div class="tbl"><table>
-      <thead><tr><th>Ingrediente</th><th class="r">EM kcal</th><th class="r">PC %</th><th class="r">Lis %</th><th class="r">M+C %</th><th class="r">Ca %</th><th class="r">Pd %</th><th>Notas</th><th></th></tr></thead>
+      <thead><tr><th>Ingrediente</th><th class="r">EM kcal${ayuda('EM')}</th><th class="r">PC %${ayuda('PC')}</th><th class="r">Lis %${ayuda('Lys')}</th><th class="r">M+C %${ayuda('MC')}</th><th class="r">Ca %${ayuda('Ca')}</th><th class="r">Pd %${ayuda('Pd')}</th><th>Notas</th><th></th></tr></thead>
       <tbody>${filas}</tbody></table></div>
   </div>
   ${siguiente('ingredientes')}`;
@@ -1052,10 +1241,10 @@ function pintarDetalle(){
     <div class="grid g4" style="margin-top:12px">
       <label class="f">Nombre<input data-campo="nombre" value="${esc(ing.nombre)}"></label>
       <label class="f">Categoría<select data-campo="cat">${CATS.map(c=>`<option ${c===ing.cat?'selected':''}>${c}</option>`).join('')}</select></label>
-      ${campos.map(([k,n,u])=>`<label class="f">${n} (${u})<input data-comp="${k}" value="${ing.comp[k]}" inputmode="decimal"></label>`).join('')}
+      ${campos.map(([k,n,u])=>`<label class="f"><span>${n} (${u})${ayuda(k)}</span><input data-comp="${k}" value="${ing.comp[k]}" inputmode="decimal"></label>`).join('')}
     </div>
     <h4>Aminoácidos (%): total · digestible</h4>
-    <div class="grid g4">${AA_KEYS.map(k=>`<label class="f">${NUT[k].n}<span class="row" style="flex-wrap:nowrap;gap:6px"><input data-comp="${k}" value="${ing.comp[k]}" title="Total" inputmode="decimal"><input data-comp="d${k}" value="${ing.comp['d'+k]}" title="Digestible" inputmode="decimal"></span></label>`).join('')}</div>`;
+    <div class="grid g4">${AA_KEYS.map(k=>`<label class="f"><span>${NUT[k].n}${ayuda(k)}</span><span class="row" style="flex-wrap:nowrap;gap:6px"><input data-comp="${k}" value="${ing.comp[k]}" title="Total" inputmode="decimal"><input data-comp="d${k}" value="${ing.comp['d'+k]}" title="Digestible" inputmode="decimal"></span></label>`).join('')}</div>`;
   $$('[data-comp]',box).forEach(i=>i.addEventListener('change',()=>{ ing.comp[i.dataset.comp]=num(i.value)||0; S.resultado=null; guardar(); }));
   $$('[data-campo]',box).forEach(i=>i.addEventListener('change',()=>{ ing[i.dataset.campo]=i.value; guardar(); render(); }));
   $('#cerrarDet').addEventListener('click',()=>{ ingDetalle=null; pintarDetalle(); });
@@ -1072,7 +1261,7 @@ function renderPrecios(el){
   <div class="card">
     <div class="row between" style="margin-bottom:10px"><h3 style="margin:0">Precios y límites · ${sel.length} ingredientes</h3><span class="small muted">Precio por tonelada = precio por kg × 1000</span></div>
     <div class="tbl"><table>
-      <thead><tr><th>Ingrediente</th><th class="r">${esc(S.moneda)}/kg</th><th class="r">${esc(S.moneda)}/t</th><th class="r">Mínimo %</th><th class="r">Máximo %</th><th class="r">${esc(S.moneda)} por 1,000 kcal</th><th class="r">${esc(S.moneda)} por kg de PC</th></tr></thead>
+      <thead><tr><th>Ingrediente</th><th class="r">${esc(S.moneda)}/kg${ayuda('precio')}</th><th class="r">${esc(S.moneda)}/t</th><th class="r">Mínimo %${ayuda('incl')}</th><th class="r">Máximo %</th><th class="r">${esc(S.moneda)} por 1,000 kcal${ayuda('pkcal')}</th><th class="r">${esc(S.moneda)} por kg de PC${ayuda('ppc')}</th></tr></thead>
       <tbody>${sel.map(i=>`<tr>
         <td>${esc(i.nombre)}</td>
         <td class="r"><input class="num" data-pr="${i.id}" data-f="precio" value="${i.precio}"></td>
@@ -1107,7 +1296,7 @@ function renderFormulacion(el){
     <button class="btn lg accent" id="formular">⚙ Formular</button></div></div>
   <div id="res"></div>
   <div class="card">
-    <h3>Evaluar una fórmula existente</h3>
+    <h3>Evaluar una fórmula existente${ayuda('evaluar')}</h3>
     <p class="small muted" style="margin-top:0">Escribe los porcentajes de una fórmula que ya uses (o de un artículo) y la app calcula su aporte y su costo con tu matriz y tus precios, comparado contra los requerimientos de la fase.</p>
     <div class="grid g4">${sel.map(i=>`<label class="f">${esc(i.nombre)}<input data-ev="${i.id}" value="${S.evaluar[i.id]??''}" placeholder="0" inputmode="decimal"></label>`).join('')}</div>
     <div class="row" style="margin-top:12px"><button class="btn" id="btnEval">Evaluar fórmula</button><button class="btn ghost sm" id="copiarOpt">Copiar la fórmula óptima aquí</button><button class="btn link" id="limpiarEv">Limpiar</button></div>
@@ -1122,7 +1311,7 @@ function renderFormulacion(el){
   pintarResultado();
 }
 function tablaNutrientes(nutr, req, base, restr){
-  return `<div class="tbl"><table><thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mín.</th><th class="r">Máx.</th><th class="r">Aporte</th><th>Estado</th>${restr?'<th class="r">Costo marginal /t (+1 % req.)</th>':''}</tr></thead><tbody>
+  return `<div class="tbl"><table><thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mín.</th><th class="r">Máx.</th><th class="r">Aporte</th><th>Estado${ayuda('estado')}</th>${restr?`<th class="r">Costo marginal /t (+1 % req.)${ayuda('marg')}</th>`:''}</tr></thead><tbody>
   ${NUTRIENTES.map(nu=>{
     const v = nutr[nu.k], q = req[nu.k]||[null,null];
     let est='<span class="badge ok">cumple</span>', marg='';
@@ -1134,23 +1323,23 @@ function tablaNutrientes(nutr, req, base, restr){
       if(rmin&&rmin.activa){ est='<span class="badge warn">en el mínimo · limitante</span>'; marg = money(10*rmin.dual*rmin.req); }
       else if(rmax&&rmax.activa){ est='<span class="badge warn">en el máximo · limitante</span>'; marg = money(10*rmax.dual*rmax.req); }
     }
-    return `<tr><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${base==='dig'?'dig.':'total'})</span>`:''}</td><td class="muted">${nu.u}</td><td class="r">${q[0]!=null?fmt(q[0],nu.d):'—'}</td><td class="r">${q[1]!=null?fmt(q[1],nu.d):'—'}</td><td class="r"><b>${fmt(v,nu.d)}</b></td><td>${est}</td>${restr?`<td class="r">${marg}</td>`:''}</tr>`;
+    return `<tr><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${base==='dig'?'dig.':'total'})</span>`:''}${ayuda(nu.k)}</td><td class="muted">${nu.u}</td><td class="r">${q[0]!=null?fmt(q[0],nu.d):'—'}</td><td class="r">${q[1]!=null?fmt(q[1],nu.d):'—'}</td><td class="r"><b>${fmt(v,nu.d)}</b></td><td>${est}</td>${restr?`<td class="r">${marg}</td>`:''}</tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function tablaIndicadores(n){
   const L = n.Lys||1;
   const ind = [
-    ['Relación Ca : P disponible', n.Pd?fmt(n.Ca/n.Pd,2)+' : 1':'—', '1.8–2.1 : 1', n.Pd && n.Ca/n.Pd>=1.7 && n.Ca/n.Pd<=2.3],
-    ['Balance electrolítico (Na+K−Cl)', fmt(n.DEB,0)+' mEq/kg', '200–300 (óptimo ≈250)', n.DEB>=200&&n.DEB<=300],
-    ['Relación EM : PC', n.PC?fmt(n.EM/n.PC,0)+' kcal/%':'—', 'informativo', null],
-    ['Met+Cis : Lis', fmt(100*n.MC/L,0), '74–78', 100*n.MC/L>=73],
-    ['Treonina : Lis', fmt(100*n.Thr/L,0), '65–68', 100*n.Thr/L>=64],
-    ['Valina : Lis', fmt(100*n.Val/L,0), '76–80', 100*n.Val/L>=75],
-    ['Arginina : Lis', fmt(100*n.Arg/L,0), '105–110', 100*n.Arg/L>=104],
-    ['Grasa total (EE)', fmt(n.EE,2)+' %', '< 7 % para buen pellet', n.EE<7]
+    ['Relación Ca : P disponible', n.Pd?fmt(n.Ca/n.Pd,2)+' : 1':'—', '1.8–2.1 : 1', n.Pd && n.Ca/n.Pd>=1.7 && n.Ca/n.Pd<=2.3,'CaP'],
+    ['Balance electrolítico (Na+K−Cl)', fmt(n.DEB,0)+' mEq/kg', '200–300 (óptimo ≈250)', n.DEB>=200&&n.DEB<=300,'DEB'],
+    ['Relación EM : PC', n.PC?fmt(n.EM/n.PC,0)+' kcal/%':'—', 'informativo', null,'EMPC'],
+    ['Met+Cis : Lis', fmt(100*n.MC/L,0), '74–78', 100*n.MC/L>=73,'MCLys'],
+    ['Treonina : Lis', fmt(100*n.Thr/L,0), '65–68', 100*n.Thr/L>=64,'ThrLys'],
+    ['Valina : Lis', fmt(100*n.Val/L,0), '76–80', 100*n.Val/L>=75,'ValLys'],
+    ['Arginina : Lis', fmt(100*n.Arg/L,0), '105–110', 100*n.Arg/L>=104,'ArgLys'],
+    ['Grasa total (EE)', fmt(n.EE,2)+' %', '< 7 % para buen pellet', n.EE<7,'pellet']
   ];
   return `<div class="tbl"><table><thead><tr><th>Indicador</th><th class="r">Valor</th><th>Referencia</th><th></th></tr></thead>
-    <tbody>${ind.map(i=>`<tr><td>${i[0]}</td><td class="r">${i[1]}</td><td class="muted">${i[2]}</td><td>${i[3]===null?'':i[3]?'<span class="badge ok">✓</span>':'<span class="badge warn">revisar</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+    <tbody>${ind.map(i=>`<tr><td>${i[0]}${ayuda(i[4])}</td><td class="r">${i[1]}</td><td class="muted">${i[2]}</td><td>${i[3]===null?'':i[3]?'<span class="badge ok">✓</span>':'<span class="badge warn">revisar</span>'}</td></tr>`).join('')}</tbody></table></div>`;
 }
 function pintarResultado(){
   const box = $('#res'); if(!box) return;
@@ -1171,12 +1360,12 @@ function pintarResultado(){
   const fijos = new Set(S.ingredientes.filter(i=>i.min>0 && i.min===i.max).map(i=>i.id));
   const limIng = r.restr.filter(x=>x.tipo==='ing' && x.activa && !fijos.has(x.id));
   box.innerHTML = `
-  <div class="alert ${r.cert.ok?'ok':'warn'}"><b>${r.cert.ok?'✓ Solución óptima certificada.':'Solución encontrada.'}</b> ${usados.length} ingredientes. ${r.cert.ok?'Se comprobó por dualidad fuerte que no existe otra combinación más barata que cumpla las mismas restricciones':'Revisa el certificado'} (brecha primal–dual ${r.cert.brecha.toExponential(1)}; violación máxima ${r.cert.viol.toExponential(1)}).</div>
+  <div class="alert ${r.cert.ok?'ok':'warn'}"><b>${r.cert.ok?'✓ Solución óptima certificada.':'Solución encontrada.'}</b> ${usados.length} ingredientes. ${r.cert.ok?'Se comprobó por dualidad fuerte que no existe otra combinación más barata que cumpla las mismas restricciones':'Revisa el certificado'} (brecha primal–dual ${r.cert.brecha.toExponential(1)}; violación máxima ${r.cert.viol.toExponential(1)}).${ayuda('cert')}</div>
   <div class="kpis">
-    <div class="kpi"><div class="l">Costo por tonelada</div><div class="v">${money(r.costoKg*1000)}</div><div class="s">${money(r.costoKg)} por kg</div></div>
-    <div class="kpi"><div class="l">Alimento por ave en la fase</div><div class="v">${cons?money(r.costoKg*cons):'—'}</div><div class="s">${cons?fmt(cons,2)+' kg por ave':'captura el consumo (Bloque 2)'}</div></div>
-    <div class="kpi"><div class="l">Costo de alimento / kg ganado</div><div class="v">${cons&&gan?money(r.costoKg*cons/gan):'—'}</div><div class="s">conversión ${cons&&gan?fmt(cons/gan,2):'—'}</div></div>
-    <div class="kpi"><div class="l">Alimento para el lote</div><div class="v">${totalKg?fmt(totalKg/1000,1)+' t':'—'}</div><div class="s">${totalKg?fmt(S.cond.aves,0)+' aves · '+money(r.costoKg*totalKg):''}</div></div>
+    <div class="kpi"><div class="l">Costo por tonelada${ayuda('costoT')}</div><div class="v">${money(r.costoKg*1000)}</div><div class="s">${money(r.costoKg)} por kg</div></div>
+    <div class="kpi"><div class="l">Alimento por ave en la fase${ayuda('costoAve')}</div><div class="v">${cons?money(r.costoKg*cons):'—'}</div><div class="s">${cons?fmt(cons,2)+' kg por ave':'captura el consumo (Bloque 2)'}</div></div>
+    <div class="kpi"><div class="l">Costo de alimento / kg ganado${ayuda('costoKgGan')}</div><div class="v">${cons&&gan?money(r.costoKg*cons/gan):'—'}</div><div class="s">conversión ${cons&&gan?fmt(cons/gan,2):'—'}</div></div>
+    <div class="kpi"><div class="l">Alimento para el lote${ayuda('loteAlim')}</div><div class="v">${totalKg?fmt(totalKg/1000,1)+' t':'—'}</div><div class="s">${totalKg?fmt(S.cond.aves,0)+' aves · '+money(r.costoKg*totalKg):''}</div></div>
   </div>
   <div class="card"><h3>Fórmula</h3><div class="tbl"><table>
     <thead><tr><th>Ingrediente</th><th class="r">%</th><th style="width:22%"></th><th class="r">kg por bache de ${fmt(lote,0)} kg</th><th class="r">${esc(S.moneda)}/kg</th><th class="r">Aporte al costo ${esc(S.moneda)}/t</th></tr></thead>
@@ -1185,10 +1374,10 @@ function pintarResultado(){
   <div class="card"><h3>Aporte nutricional</h3>${tablaNutrientes(r.nutr, r.contexto.req, r.base, r.restr)}</div>
   <div class="card"><h3>Indicadores de calidad</h3>${tablaIndicadores(r.nutr)}</div>
   <div class="card"><h3>Análisis de sensibilidad</h3><div class="grid g2">
-    <div><h4 style="margin-top:0">Ingredientes no usados · precio de entrada</h4>
+    <div><h4 style="margin-top:0">Ingredientes no usados · precio de entrada${ayuda('entrada')}</h4>
     ${noUsados.length?`<div class="tbl"><table><thead><tr><th>Ingrediente</th><th class="r">Precio actual</th><th class="r">Entraría a</th></tr></thead><tbody>
     ${noUsados.map(x=>`<tr><td>${esc(x.nombre)}</td><td class="r">${fmt(x.precio,2)}</td><td class="r">${x.reducido>1e-6&&x.precio-x.reducido>0?'≤ '+fmt(x.precio-x.reducido,2):'—'}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted small">Todos los ingredientes seleccionados entraron a la fórmula.</p>'}</div>
-    <div><h4 style="margin-top:0">Ingredientes en su límite de inclusión</h4>
+    <div><h4 style="margin-top:0">Ingredientes en su límite de inclusión${ayuda('limEf')}</h4>
     ${limIng.length?`<div class="tbl"><table><thead><tr><th>Límite</th><th class="r">Efecto de +1 % /t</th></tr></thead><tbody>
     ${limIng.map(x=>`<tr><td>${esc(x.etiqueta)}</td><td class="r">${money(10*x.dual)}</td></tr>`).join('')}</tbody></table></div><p class="small muted">Negativo = relajar ese límite abarataría la dieta.</p>`:'<p class="muted small">Ningún ingrediente quedó topado en su límite.</p>'}</div>
   </div></div>`;
@@ -1232,10 +1421,10 @@ function pintarPrograma(){
   box.innerHTML = `
   ${fallas.length?`<div class="alert bad"><b>${fallas.length} fase(s) sin solución:</b> ${fallas.map(f=>esc(f.nombre)).join(', ')}. ${fallas.map(f=>f.r.diagnostico&&f.r.diagnostico.culpables.length?`En ${esc(f.nombre)} basta relajar: ${f.r.diagnostico.culpables.slice(0,3).map(esc).join('; ')}.`:'').join(' ')}</div>`:''}
   <div class="kpis">
-    <div class="kpi"><div class="l">Costo de alimento por ave (ciclo)</div><div class="v">${money(costoAve)}</div><div class="s">${fmt(consT,2)} kg de alimento</div></div>
-    <div class="kpi"><div class="l">Costo de alimento / kg de peso vivo</div><div class="v">${ganT?money(costoAve/ganT):'—'}</div><div class="s">${fmt(ganT,2)} kg ganados</div></div>
-    <div class="kpi"><div class="l">Costo promedio ponderado</div><div class="v">${consT?money(costoAve/consT*1000):'—'}</div><div class="s">por tonelada</div></div>
-    <div class="kpi"><div class="l">Alimento total para el lote</div><div class="v">${S.cond.aves?fmt(consT*S.cond.aves/1000,1)+' t':'—'}</div><div class="s">${S.cond.aves?money(costoAve*S.cond.aves):''}</div></div>
+    <div class="kpi"><div class="l">Costo de alimento por ave (ciclo)${ayuda('costoCiclo')}</div><div class="v">${money(costoAve)}</div><div class="s">${fmt(consT,2)} kg de alimento</div></div>
+    <div class="kpi"><div class="l">Costo de alimento / kg de peso vivo${ayuda('costoKgPV')}</div><div class="v">${ganT?money(costoAve/ganT):'—'}</div><div class="s">${fmt(ganT,2)} kg ganados</div></div>
+    <div class="kpi"><div class="l">Costo promedio ponderado${ayuda('promPond')}</div><div class="v">${consT?money(costoAve/consT*1000):'—'}</div><div class="s">por tonelada</div></div>
+    <div class="kpi"><div class="l">Alimento total para el lote${ayuda('loteAlim')}</div><div class="v">${S.cond.aves?fmt(consT*S.cond.aves/1000,1)+' t':'—'}</div><div class="s">${S.cond.aves?money(costoAve*S.cond.aves):''}</div></div>
   </div>
   <div class="card"><h3>Resumen por fase</h3><div class="tbl"><table>
     <thead><tr><th>Fase</th><th>Días</th><th class="r">${esc(S.moneda)}/t</th><th class="r">EM</th><th class="r">PC %</th><th class="r">Lis ${P.base==='dig'?'dig.':'tot.'} %</th><th class="r">Ca %</th><th class="r">Pd %</th><th class="r">kg/ave</th><th class="r">${esc(S.moneda)}/ave</th><th></th></tr></thead>
@@ -1348,10 +1537,10 @@ function renderValidacion(el){
   const etiquetas = {EM:'Energía metabolizable',PC:'Proteína cruda',AA:'Aminoácidos',Min:'Ca, P disponible y Na'};
   el.innerHTML = `${cabecera('validacion','¿La app da resultados correctos? Aquí se introducen, tal cual, dietas publicadas en revistas científicas y se compara lo que calcula FormulAves contra lo que reportan los autores. Después se reformulan con la app para ver si llega a una dieta equivalente.')}
   ${teoriaDe(['validacion'])}
-  <div class="card"><h3>Resumen de la validación</h3>
+  <div class="card"><h3>Resumen de la validación${ayuda('mape')}</h3>
     <p class="small muted" style="margin-top:0">Error absoluto medio entre el análisis calculado que reporta cada artículo y el que calcula la app con su matriz de ingredientes (${VALIDACION.reduce((s,c)=>s+c.fases.length,0)} dietas de ${VALIDACION.length} artículos).</p>
     <div class="kpis" style="margin:0">${Object.entries(res).map(([k,v])=>`<div class="kpi"><div class="l">${etiquetas[k]}</div><div class="v">${fmt(v.mape,1)} %</div><div class="s">${v.n} comparaciones · máx. ${fmt(v.max,1)} %</div></div>`).join('')}
-      <div class="kpi"><div class="l">Prueba del optimizador</div><div class="v">${opt.igual} / ${opt.n}</div><div class="s">fórmulas publicadas reencontradas exactamente · ${opt.cert} con certificado de optimalidad</div></div></div>
+      <div class="kpi"><div class="l">Prueba del optimizador${ayuda('reform')}</div><div class="v">${opt.igual} / ${opt.n}</div><div class="s">fórmulas publicadas reencontradas exactamente · ${opt.cert} con certificado de optimalidad</div></div></div>
   </div>
   <div class="card"><h3>Prueba matemática del motor de cálculo</h3>
     <p class="small" style="margin:0">Además de las dietas publicadas, el método símplex de la app se comparó con un solucionador independiente de referencia (HiGHS, en SciPy 1.17) en <b>400 problemas de formulación generados al azar</b> con las 6 tablas de requerimientos y la biblioteca de ingredientes, variando requerimientos (±8 %), ingredientes disponibles y precios. Resultado: <b>350 de 350</b> problemas con solución dieron el mismo costo mínimo (diferencia relativa máxima 5×10⁻¹⁴), los <b>50</b> problemas sin solución fueron detectados como tales por ambos, y las 350 soluciones de la app pasaron el certificado de optimalidad por dualidad.</p></div>
@@ -1381,7 +1570,7 @@ function pintarReform(R, f){
     ? `Pidiendo a la app los valores <b>que reporta el artículo</b> también hay solución (${money(rA.costoKg*1000)}/t). Con la matriz de la app, la fórmula publicada cumple ${nOk} de ${nT} de esos valores; el resto de la diferencia es la matriz de ingredientes.`
     : `Pidiendo a la app los valores <b>que reporta el artículo</b> no hay solución con estos ingredientes: con la matriz de la app la fórmula publicada solo cumple ${nOk} de ${nT} valores${rA.diagnostico&&rA.diagnostico.culpables.length?' (basta relajar: '+rA.diagnostico.culpables.slice(0,3).map(esc).join('; ')+')':''}. Es una diferencia de matriz, no del cálculo.`;
   if(!rB.ok) return `<div class="alert warn">No se pudo reformular: ${esc(rB.motivo)}</div>`;
-  return `<h4>Prueba del optimizador: reformular con los mismos ingredientes y el mismo aporte</h4>
+  return `<h4>Prueba del optimizador: reformular con los mismos ingredientes y el mismo aporte${ayuda('reform')}</h4>
     <p class="small muted" style="margin-top:0">Se pide a la app una dieta con, al menos, el mismo aporte que calcula para la fórmula publicada. Como la fórmula publicada ya cumple, la app debe encontrar una igual o más barata.</p>
     <div class="grid g2"><div class="tbl"><table><thead><tr><th>Ingrediente</th><th class="r">Artículo %</th><th class="r">App %</th><th class="r">Δ</th></tr></thead><tbody>
       ${ids.map(id=>{ const a = (rB.formula.find(x=>x.id===id)||{pct:0}).pct; return `<tr><td class="wrap">${esc(ING_LIB.find(x=>x[0]===id)[1])}</td><td class="r">${fmt(pub[id],2)}</td><td class="r"><b>${fmt(a,2)}</b></td><td class="r">${(a-pub[id]>=0?'+':'')+fmt(a-pub[id],2)}</td></tr>`; }).join('')}
