@@ -21,6 +21,8 @@ La formulación se organiza en bloques, cada uno con su marco teórico:
 7. **Programa multifase**: todas las fases a la vez, con el costo de alimento por ave y por kg de peso vivo.
 8. **Informe**: resumen, impresión en PDF, exportación a CSV y guardado del proyecto.
 
+**Dos vistas (botón Productor / Científico):** la de productor muestra lo esencial en lenguaje sencillo, con hoja de mezclado en kg, costo por pollo y consejos en cada paso; la científica muestra el modelo de programación lineal, precios sombra, costos reducidos, certificado de dualidad, los 20 nutrientes, la validación y las referencias, con exportación del modelo en JSON.
+
 **Ayuda contextual:** cada parámetro, índice e indicador tiene un signo **?** que, al pasar el mouse (o tocarlo en el celular), muestra su concepto y su escala de decisión.
 
 ## Validación
@@ -33,7 +35,7 @@ El detalle está en la pestaña **Validación** de la aplicación.
 
 ## Cómo citar
 
-Mojica-Zárate, H. T., y Barrera-Guzmán, L. A. (2026). *FormulAves: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda* (Versión 2.0.0) [Software]. https://doi.org/10.5281/zenodo.23034431
+Mojica-Zárate, H. T., y Barrera-Guzmán, L. A. (2026). *FormulAves: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda* (Versión 2.1.0) [Software]. https://doi.org/10.5281/zenodo.23034431
 
 ## Autores
 

@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "Si usas este software, por favor cítalo como se indica a continuación."
 title: "FormulAves: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda"
-version: 2.0.0
+version: 2.1.0
 doi: "10.5281/zenodo.23034431"
-date-released: 2026-09-29
+date-released: 2026-10-01
 type: software
 authors:
   - given-names: "Héctor Tecumshé"

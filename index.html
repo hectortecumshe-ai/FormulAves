@@ -284,6 +284,35 @@ dialog .db{padding:10px 22px 20px}
 #qtip li::before{content:"";position:absolute;left:2px;top:.5em;width:8px;height:8px;border-radius:50%;background:var(--info)}
 #qtip li.ok::before{background:var(--ok)} #qtip li.warn::before{background:var(--warn)} #qtip li.bad::before{background:var(--bad)}
 @media print{ .qh,#qtip{display:none!important} }
+.langsw{display:inline-flex;border:1px solid var(--border-strong);border-radius:var(--r-pill);padding:3px;background:var(--card)}
+.langsw button{border:0;background:none;color:var(--muted);font-weight:700;font-size:13px;padding:5px 12px;border-radius:var(--r-pill);cursor:pointer;font-family:inherit;letter-spacing:.04em}
+.langsw button.on{background:var(--primary);color:var(--on-primary)}
+/* ---- vista productor / científico ---- */
+html[data-modo="prod"] .sci, html[data-modo="cien"] .prod{display:none!important}
+.modesw button{display:inline-flex;align-items:center;gap:6px}
+.modesw svg{width:15px;height:15px;flex:none}
+.consejo{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(135deg,var(--primary-soft),var(--card));border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--r-lg);padding:14px 18px;margin:0 0 18px}
+.consejo>svg{flex:none;width:36px;height:36px}
+.consejo p{margin:0}
+.consejo .k{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.vistas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px}
+.vista{border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;background:var(--card);box-shadow:var(--shadow-sm);transition:.2s var(--ease)}
+.vista.on{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 28%,transparent),var(--shadow-sm)}
+.vista h3{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.vista h3 svg{width:34px;height:34px;flex:none}
+.vista ul{margin:8px 0 14px;padding-left:18px;color:var(--muted);font-size:14.5px}
+.vista .tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);margin-left:auto}
+.modelo{font-family:"Cambria Math","STIX Two Math","Latin Modern Math","Palatino Linotype",serif;font-size:16px;background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 18px;line-height:2;overflow-x:auto}
+.mezcla{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:8px;margin:10px 0 12px}
+.mezcla label{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--card);cursor:pointer}
+.mezcla label span{display:flex;gap:8px;align-items:center}
+.mezcla label b{font-size:18px;color:var(--primary-dark);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mezcla input{width:18px;height:18px;accent-color:var(--primary);flex:none}
+.mezcla label:has(input:checked){opacity:.5;text-decoration:line-through}
+.granja{margin:0;padding-left:20px;display:grid;gap:6px}
+@media (max-width:600px){ .modesw span{display:none} .modesw button{padding:5px 8px} }
+.consejo>svg{width:36px;height:36px}
+@media (max-width:600px){ .bar-top{gap:6px} #pill,.brand-sub{display:none!important} .ibtn.round{width:34px;min-width:34px;height:34px} }
 </style>
 </head>
 <body>
@@ -295,6 +324,7 @@ dialog .db{padding:10px 22px 20px}
     </button>
     <span class="sp"></span>
     <span class="ibtn no-print" id="pill" title="Dieta en curso"><span class="lbl" id="pillTxt">Pollo de engorda</span></span>
+    <div class="langsw modesw no-print" role="group" id="modesw" aria-label="Vista / View"><button data-vista="prod" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-9M12 12C12 7.5 9 5 4.5 5c0 4.5 3 7 7.5 7zM12 14c0-3.8 2.6-6.5 7.5-6.5 0 4.2-2.9 6.5-7.5 6.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="lblProd">Productor</span></button><button data-vista="cien" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v6L4.6 18.6A1.6 1.6 0 0 0 6 21h12a1.6 1.6 0 0 0 1.4-2.4L14 9V3M7.2 15h9.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="lblCien">Científico</span></button></div>
     <button class="ibtn round" id="btnTema" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema">☀</button>
     <button class="ibtn round" id="btnAyuda" title="Ayuda" aria-label="Ayuda">?</button>
   </div>
@@ -310,6 +340,7 @@ dialog .db{padding:10px 22px 20px}
       <li>En <b>Formulación</b> presiona <i>Formular</i>: se calcula la dieta de mínimo costo que cumple todo.</li>
       <li>En <b>Programa</b> formulas todas las fases de una sola vez y ves el costo total por ave.</li>
       <li>En <b>Validación</b> puedes ver cómo la app reproduce dietas publicadas en revistas científicas.</li>
+      <li>El botón <b>Productor / Científico</b> cambia la vista: la de productor muestra lo esencial en lenguaje sencillo (con hoja de mezclado); la científica muestra el modelo completo, los precios sombra, la validación y las referencias.</li>
       <li>Tu trabajo se <b>guarda solo</b> en este navegador. Para llevarlo a otra computadora usa <i>Informe → Guardar proyecto</i>.</li>
     </ol>
     <p class="small muted">Los valores precargados son de referencia. Verifica con el manual vigente de tu línea genética y con los análisis de tus ingredientes.</p>
@@ -322,7 +353,7 @@ dialog .db{padding:10px 22px 20px}
    ===================================================================== */
 const CONFIG = {
   app: 'FormulAves',
-  version: '2.0.0',
+  version: '2.1.0',
   anio: 2026,
   autor: 'Mojica-Zárate, H. T., y Barrera-Guzmán, L. A.',      // autores en formato APA 7
   autores: 'Héctor Tecumshé Mojica Zárate y Luis Ángel Barrera Guzmán', // nombres completos (pie de página)
@@ -641,7 +672,9 @@ function simplex(c, filas){
   });
   const basis = R_.map((r,i)=> r.op==='<=' ? colH[i] : colA[i]);
   const esArt = j => j>=n+nS;
+  let PIV=0;
   function pivot(pr,pc){
+    PIV++;
     const P=T[pr], p=P[pc];
     for(let j=0;j<=N;j++) P[j]/=p;
     for(let i=0;i<m;i++){ if(i===pr) continue; const f=T[i][pc]; if(Math.abs(f)>1e-12){ const Ti=T[i]; for(let j=0;j<=N;j++) Ti[j]-=f*P[j]; } }
@@ -679,7 +712,7 @@ function simplex(c, filas){
     return y*r.sg;
   });
   const reducidos = []; for(let j=0;j<n;j++) reducidos[j]=reducido(c2,j);
-  return {estado:'optimo', x, z, duales, reducidos};
+  return {estado:'optimo', x, z, duales, reducidos, piv:PIV};
 }
 
 /* Certificado de optimalidad por dualidad fuerte:
@@ -737,7 +770,8 @@ function resolverModelo(M){
   });
   return { ok:true, fecha:new Date().toISOString(), base:M.base,
     formula: M.ings.map((ing,j)=>({id:ing.id, nombre:ing.nombre, cat:ing.cat, pct:pct[j], precio:+ing.precio, reducido: sol.reducidos[j]})),
-    costoKg: sol.z/100, nutr, restr, cert: certificado(M.c, M.filas, sol.x, sol.duales) };
+    costoKg: sol.z/100, nutr, restr, cert: certificado(M.c, M.filas, sol.x, sol.duales),
+    modelo: {n:M.ings.length, m:M.filas.length, piv:sol.piv} };
 }
 function diagnosticar(M){
   const culpables = [];
@@ -775,6 +809,14 @@ function formularPrograma(s){
 "use strict";
 function T(es){ return es; }
 function tx(o){ return (o&&typeof o==='object'&&'es' in o)?o.es:o; }
+/* Vista: productor (lo esencial, lenguaje sencillo) o científico (modelo completo) */
+let MODO = 'prod';
+try{ MODO = localStorage.getItem('formulaves_modo')==='cien' ? 'cien' : 'prod'; }catch(e){}
+const SCI = () => MODO==='cien';
+const minus = s => s ? s.charAt(0).toLowerCase()+s.slice(1) : s;
+const KEYN = ['EM','PC','Lys','MC','Thr','Ca','Pd','Na'];   // nutrientes visibles en la vista productor
+const IC_PROD = '<svg aria-hidden="true" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#eef4e6"/><path d="M8 40h32" stroke="#7d5a2c" stroke-width="3" stroke-linecap="round"/><path d="M24 40V22" stroke="#2f5d50" stroke-width="3" stroke-linecap="round"/><path d="M24 24c0-7-5-11-12-11 0 7 5 11 12 11z" fill="#5f9a4a"/><path d="M24 28c0-6 4-10 11-10 0 6-4 10-11 10z" fill="#8fb3a5"/><circle cx="36" cy="11" r="4" fill="#f2c46d"/></svg>';
+const IC_CIEN = '<svg aria-hidden="true" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#e8eef6"/><path d="M19 8h10M20.5 8v12L11 36.5A3 3 0 0 0 13.6 41h20.8A3 3 0 0 0 37 36.5L27.5 20V8" fill="#fff" stroke="#2f5d50" stroke-width="2.4" stroke-linejoin="round"/><path d="M15.2 30h17.6L37 36.5A3 3 0 0 1 34.4 41H13.6A3 3 0 0 1 11 36.5z" fill="#3b6aa0" opacity=".85"/><circle cx="21" cy="35" r="1.6" fill="#fff"/><circle cx="27" cy="33" r="1.1" fill="#fff"/><path d="M33 9l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="#e0a13c"/></svg>';
 </script>
 <script>
 "use strict";
@@ -1045,6 +1087,19 @@ function renderInicio(el){
     </div>
   </section>
 
+  <h2 class="section-t">${T('Una herramienta, dos miradas','One tool, two views')}</h2>
+  <p class="section-l">${T('FormulAves sirve al productor que decide en la granja y al investigador que necesita rigor y reproducibilidad. Cambia de vista cuando quieras con el botón <b>Productor / Científico</b> de la barra superior; tus datos no se pierden.','RatioAvis serves the producer who decides on the farm and the researcher who needs rigor and reproducibility. Switch views at any time with the <b>Producer / Scientist</b> button in the top bar; your data is kept.')}</p>
+  <div class="vistas">
+    <div class="vista ${MODO==='prod'?'on':''}"><h3>${IC_PROD}${T('Vista productor','Producer view')}${MODO==='prod'?`<span class="tag">${T('activa','active')}</span>`:''}</h3>
+      <p class="muted" style="margin:0">${T('Lo esencial para decidir, en lenguaje sencillo.','The essentials to decide, in plain language.')}</p>
+      <ul><li>${T('Consejos breves en cada paso','Short tips at every step')}</li><li>${T('Los 8 nutrientes clave y los indicadores prácticos','The 8 key nutrients and practical indicators')}</li><li>${T('Hoja de mezclado en kg para tu bache, lista para imprimir','Mixing sheet in kg for your batch, ready to print')}</li><li>${T('Costo por pollo, por kg de carne y por lote','Cost per bird, per kg of meat and per flock')}</li></ul>
+      ${MODO==='prod'?'':`<button class="btn sm" data-vista="prod">${T('Usar vista productor','Use producer view')}</button>`}</div>
+    <div class="vista ${MODO==='cien'?'on':''}"><h3>${IC_CIEN}${T('Vista científica','Scientist view')}${MODO==='cien'?`<span class="tag">${T('activa','active')}</span>`:''}</h3>
+      <p class="muted" style="margin:0">${T('Todo el modelo, para investigación, docencia y revisión por pares.','The whole model, for research, teaching and peer review.')}</p>
+      <ul><li>${T('Modelo de programación lineal explícito y certificado de dualidad','Explicit linear-programming model and duality certificate')}</li><li>${T('Precios sombra y costos reducidos de todas las restricciones','Shadow prices and reduced costs of every constraint')}</li><li>${T('Los 20 nutrientes, perfil de proteína ideal e indicadores completos','All 20 nutrients, ideal-protein profile and full indicators')}</li><li>${T('Marco teórico, validación con artículos y referencias APA','Theory, validation against papers and APA references')}</li><li>${T('Modelo y solución exportables (JSON) para reproducibilidad','Exportable model and solution (JSON) for reproducibility')}</li></ul>
+      ${MODO==='cien'?'':`<button class="btn sm" data-vista="cien">${T('Usar vista científica','Use scientist view')}</button>`}</div>
+  </div>
+
   <h2 class="section-t">Cómo funciona</h2>
   <p class="section-l">Un recorrido guiado. Cada bloque explica la idea en palabras llanas, revisa tus datos y recomienda qué hacer después. La decisión siempre la tomas tú.</p>
   <div class="howto">
@@ -1111,10 +1166,10 @@ function renderEtapa(el){
   const g = GENETICAS[S.genetica], lista = fasesDe(S.genetica);
   const filas = NUTRIENTES.map(nu=>{
     const r = S.req[nu.k]||[null,null];
-    return `<tr><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${g.base==='dig'?'dig.':'total'})</span>`:''}${ayuda(nu.k)}</td><td class="muted">${nu.u}</td>
+    return `<tr class="${KEYN.includes(nu.k)?'':'sci'}"><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${g.base==='dig'?'dig.':'total'})</span>`:''}${ayuda(nu.k)}</td><td class="muted">${nu.u}</td>
       <td class="r"><input class="num" data-req="${nu.k}" data-l="0" value="${r[0]??''}" placeholder="—" aria-label="mínimo ${esc(nu.n)}"></td>
       <td class="r"><input class="num" data-req="${nu.k}" data-l="1" value="${r[1]??''}" placeholder="—" aria-label="máximo ${esc(nu.n)}"></td>
-      <td class="r muted">${nu.aa && r[0] && S.req.Lys[0] ? fmt(100*r[0]/S.req.Lys[0],0) : ''}</td></tr>`;
+      <td class="r muted sci">${nu.aa && r[0] && S.req.Lys[0] ? fmt(100*r[0]/S.req.Lys[0],0) : ''}</td></tr>`;
   }).join('');
   el.innerHTML = `${cabecera('etapa','Los programas de alimentación dividen la vida del pollo en fases. Conforme el ave crece baja su necesidad de proteína y aminoácidos por kg de alimento y sube la de energía.')}
   ${teoriaDe(['energia','proteina','minerales'])}
@@ -1139,8 +1194,9 @@ function renderEtapa(el){
       <button class="btn ghost sm" id="restaurar">↺ Restaurar valores de la tabla</button>
     </div>
     <p class="small muted" style="margin-top:0">Deja la casilla vacía para no restringir. Sexo: <b>${esc(SEXOS[S.sexo].n)}</b>. La última columna es el perfil de <b>proteína ideal</b>: cada aminoácido como % de la lisina.${S.genetica==='personal'?' <b>Perfil personalizado:</b> lo que captures aquí se guarda para esta fase.':''}</p>
+    <p class="small prod" style="margin-top:0">Vista productor: se muestran los 8 nutrientes clave. Los 20 nutrientes se siguen respetando al formular; para verlos y editarlos todos usa la vista científica.</p>
     <div class="tbl"><table>
-      <thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mínimo${ayuda('minmax')}</th><th class="r">Máximo</th><th class="r">% de Lis${ayuda('ideal')}</th></tr></thead>
+      <thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mínimo${ayuda('minmax')}</th><th class="r">Máximo</th><th class="r sci">% de Lis${ayuda('ideal')}</th></tr></thead>
       <tbody>${filas}</tbody></table></div>
   </div>
   ${siguiente('etapa')}`;
@@ -1201,8 +1257,8 @@ function renderIngredientes(el){
     return `<tr class="cat"><td colspan="9">${esc(cat)}</td></tr>` + lista.map(i=>`
       <tr><td><label class="row" style="gap:8px;flex-wrap:nowrap"><input type="checkbox" data-sel="${i.id}" ${S.sel[i.id]?'checked':''}> ${esc(i.nombre)}</label></td>
       <td class="r">${fmt(i.comp.EM,0)}</td><td class="r">${fmt(i.comp.PC,1)}</td>
-      <td class="r">${fmt(valorNut(i,'Lys',base),2)}</td><td class="r">${fmt(valorNut(i,'MC',base),2)}</td>
-      <td class="r">${fmt(i.comp.Ca,2)}</td><td class="r">${fmt(i.comp.Pd,2)}</td>
+      <td class="r sci">${fmt(valorNut(i,'Lys',base),2)}</td><td class="r sci">${fmt(valorNut(i,'MC',base),2)}</td>
+      <td class="r">${fmt(i.comp.Ca,2)}</td><td class="r sci">${fmt(i.comp.Pd,2)}</td>
       <td class="small muted wrap" style="min-width:220px">${esc(i.nota||'')}</td>
       <td><button class="btn ghost sm" data-det="${i.id}">Editar</button></td></tr>`).join('');
   }).join('');
@@ -1216,7 +1272,7 @@ function renderIngredientes(el){
       <span class="row"><input id="nuevoNombre" placeholder="Nombre del nuevo ingrediente" style="max-width:250px"><button class="btn sm" id="nuevo">+ Agregar</button></span>
     </div>
     <div class="tbl"><table>
-      <thead><tr><th>Ingrediente</th><th class="r">EM kcal${ayuda('EM')}</th><th class="r">PC %${ayuda('PC')}</th><th class="r">Lis %${ayuda('Lys')}</th><th class="r">M+C %${ayuda('MC')}</th><th class="r">Ca %${ayuda('Ca')}</th><th class="r">Pd %${ayuda('Pd')}</th><th>Notas</th><th></th></tr></thead>
+      <thead><tr><th>Ingrediente</th><th class="r">EM kcal${ayuda('EM')}</th><th class="r">PC %${ayuda('PC')}</th><th class="r sci">Lis %${ayuda('Lys')}</th><th class="r sci">M+C %${ayuda('MC')}</th><th class="r">Ca %${ayuda('Ca')}</th><th class="r sci">Pd %${ayuda('Pd')}</th><th>Notas</th><th></th></tr></thead>
       <tbody>${filas}</tbody></table></div>
   </div>
   ${siguiente('ingredientes')}`;
@@ -1243,8 +1299,8 @@ function pintarDetalle(){
       <label class="f">Categoría<select data-campo="cat">${CATS.map(c=>`<option ${c===ing.cat?'selected':''}>${c}</option>`).join('')}</select></label>
       ${campos.map(([k,n,u])=>`<label class="f"><span>${n} (${u})${ayuda(k)}</span><input data-comp="${k}" value="${ing.comp[k]}" inputmode="decimal"></label>`).join('')}
     </div>
-    <h4>Aminoácidos (%): total · digestible</h4>
-    <div class="grid g4">${AA_KEYS.map(k=>`<label class="f"><span>${NUT[k].n}${ayuda(k)}</span><span class="row" style="flex-wrap:nowrap;gap:6px"><input data-comp="${k}" value="${ing.comp[k]}" title="Total" inputmode="decimal"><input data-comp="d${k}" value="${ing.comp['d'+k]}" title="Digestible" inputmode="decimal"></span></label>`).join('')}</div>`;
+    <h4 class="sci">Aminoácidos (%): total · digestible</h4>
+    <div class="grid g4 sci">${AA_KEYS.map(k=>`<label class="f"><span>${NUT[k].n}${ayuda(k)}</span><span class="row" style="flex-wrap:nowrap;gap:6px"><input data-comp="${k}" value="${ing.comp[k]}" title="Total" inputmode="decimal"><input data-comp="d${k}" value="${ing.comp['d'+k]}" title="Digestible" inputmode="decimal"></span></label>`).join('')}</div>`;
   $$('[data-comp]',box).forEach(i=>i.addEventListener('change',()=>{ ing.comp[i.dataset.comp]=num(i.value)||0; S.resultado=null; guardar(); }));
   $$('[data-campo]',box).forEach(i=>i.addEventListener('change',()=>{ ing[i.dataset.campo]=i.value; guardar(); render(); }));
   $('#cerrarDet').addEventListener('click',()=>{ ingDetalle=null; pintarDetalle(); });
@@ -1311,7 +1367,7 @@ function renderFormulacion(el){
   pintarResultado();
 }
 function tablaNutrientes(nutr, req, base, restr){
-  return `<div class="tbl"><table><thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mín.</th><th class="r">Máx.</th><th class="r">Aporte</th><th>Estado${ayuda('estado')}</th>${restr?`<th class="r">Costo marginal /t (+1 % req.)${ayuda('marg')}</th>`:''}</tr></thead><tbody>
+  return `<div class="tbl"><table><thead><tr><th>Nutriente</th><th>Unidad</th><th class="r">Mín.</th><th class="r">Máx.</th><th class="r">Aporte</th><th>Estado${ayuda('estado')}</th>${restr?`<th class="r sci">Costo marginal /t (+1 % req.)${ayuda('marg')}</th>`:''}</tr></thead><tbody>
   ${NUTRIENTES.map(nu=>{
     const v = nutr[nu.k], q = req[nu.k]||[null,null];
     let est='<span class="badge ok">cumple</span>', marg='';
@@ -1323,7 +1379,7 @@ function tablaNutrientes(nutr, req, base, restr){
       if(rmin&&rmin.activa){ est='<span class="badge warn">en el mínimo · limitante</span>'; marg = money(10*rmin.dual*rmin.req); }
       else if(rmax&&rmax.activa){ est='<span class="badge warn">en el máximo · limitante</span>'; marg = money(10*rmax.dual*rmax.req); }
     }
-    return `<tr><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${base==='dig'?'dig.':'total'})</span>`:''}${ayuda(nu.k)}</td><td class="muted">${nu.u}</td><td class="r">${q[0]!=null?fmt(q[0],nu.d):'—'}</td><td class="r">${q[1]!=null?fmt(q[1],nu.d):'—'}</td><td class="r"><b>${fmt(v,nu.d)}</b></td><td>${est}</td>${restr?`<td class="r">${marg}</td>`:''}</tr>`;
+    return `<tr class="${KEYN.includes(nu.k)?'':'sci'}"><td>${esc(nu.n)}${nu.aa?` <span class="muted tiny">(${base==='dig'?'dig.':'total'})</span>`:''}${ayuda(nu.k)}</td><td class="muted">${nu.u}</td><td class="r">${q[0]!=null?fmt(q[0],nu.d):'—'}</td><td class="r">${q[1]!=null?fmt(q[1],nu.d):'—'}</td><td class="r"><b>${fmt(v,nu.d)}</b></td><td>${est}</td>${restr?`<td class="r sci">${marg}</td>`:''}</tr>`;
   }).join('')}</tbody></table></div>`;
 }
 function tablaIndicadores(n){
@@ -1339,7 +1395,7 @@ function tablaIndicadores(n){
     ['Grasa total (EE)', fmt(n.EE,2)+' %', '< 7 % para buen pellet', n.EE<7,'pellet']
   ];
   return `<div class="tbl"><table><thead><tr><th>Indicador</th><th class="r">Valor</th><th>Referencia</th><th></th></tr></thead>
-    <tbody>${ind.map(i=>`<tr><td>${i[0]}${ayuda(i[4])}</td><td class="r">${i[1]}</td><td class="muted">${i[2]}</td><td>${i[3]===null?'':i[3]?'<span class="badge ok">✓</span>':'<span class="badge warn">revisar</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+    <tbody>${ind.map(i=>`<tr class="${['CaP','DEB','pellet'].includes(i[4])?'':'sci'}"><td>${i[0]}${ayuda(i[4])}</td><td class="r">${i[1]}</td><td class="muted">${i[2]}</td><td>${i[3]===null?'':i[3]?'<span class="badge ok">✓</span>':'<span class="badge warn">revisar</span>'}</td></tr>`).join('')}</tbody></table></div>`;
 }
 function pintarResultado(){
   const box = $('#res'); if(!box) return;
@@ -1359,28 +1415,75 @@ function pintarResultado(){
   const totalKg = cons && S.cond.aves ? cons*S.cond.aves : null;
   const fijos = new Set(S.ingredientes.filter(i=>i.min>0 && i.min===i.max).map(i=>i.id));
   const limIng = r.restr.filter(x=>x.tipo==='ing' && x.activa && !fijos.has(x.id));
+  const nombre = x => x.nombre;
+  const lim1 = r.restr.filter(x=>x.tipo==='nut'&&x.activa&&x.lado==='min'&&x.dual*x.req>1e-9).sort((a,b)=>b.dual*b.req-a.dual*a.req)[0];
+  const entra = noUsados.filter(x=>x.reducido>1e-6&&x.precio-x.reducido>0).sort((a,b)=>a.reducido/a.precio-b.reducido/b.precio).slice(0,2);
+  const granja = [
+    T(`La dieta cuesta <b>${money(r.costoKg*1000)}</b> por tonelada (${money(r.costoKg)} por kg).`,`The diet costs <b>${money(r.costoKg*1000)}</b> per tonne (${money(r.costoKg)} per kg).`),
+    cons ? T(`En esta etapa cada pollo come unos ${fmt(cons,2)} kg: te cuesta <b>${money(r.costoKg*cons)}</b> por pollo.`,`In this phase each bird eats about ${fmt(cons,2)} kg: it costs you <b>${money(r.costoKg*cons)}</b> per bird.`) : T('Captura el consumo por ave en el Bloque 2 para saber cuánto te cuesta cada pollo.','Enter intake per bird in Block 2 to know the cost per bird.'),
+    cons&&gan ? T(`Cada kilo de peso que gana el pollo te cuesta <b>${money(r.costoKg*cons/gan)}</b> de alimento.`,`Each kilo of weight the bird gains costs you <b>${money(r.costoKg*cons/gan)}</b> in feed.`) : '',
+    totalKg ? T(`Para tus ${fmt(S.cond.aves,0)} aves necesitas <b>${fmt(totalKg/1000,1)} t</b> de alimento en esta etapa (≈ ${money(r.costoKg*totalKg)}).`,`For your ${fmt(S.cond.aves,0)} birds you need <b>${fmt(totalKg/1000,1)} t</b> of feed in this phase (≈ ${money(r.costoKg*totalKg)}).`) : '',
+    lim1 ? T(`Lo que más encarece esta dieta es cubrir la <b>${esc(minus(tx(NUT[lim1.k].n)))}</b>. Si consigues a buen precio un ingrediente rico en ella, la dieta puede bajar.`,`What makes this diet most expensive is meeting <b>${esc(minus(tx(NUT[lim1.k].n)))}</b>. An affordable ingredient rich in it could lower the cost.`) : '',
+    ...entra.map(x=>T(`Si consigues <b>${esc(nombre(x))}</b> a ${money(x.precio-x.reducido)} por kg o menos, vuelve a formular: empezaría a convenirte.`,`If you can buy <b>${esc(nombre(x))}</b> at ${money(x.precio-x.reducido)} per kg or less, reformulate: it would start to pay off.`))
+  ].filter(Boolean);
   box.innerHTML = `
-  <div class="alert ${r.cert.ok?'ok':'warn'}"><b>${r.cert.ok?'✓ Solución óptima certificada.':'Solución encontrada.'}</b> ${usados.length} ingredientes. ${r.cert.ok?'Se comprobó por dualidad fuerte que no existe otra combinación más barata que cumpla las mismas restricciones':'Revisa el certificado'} (brecha primal–dual ${r.cert.brecha.toExponential(1)}; violación máxima ${r.cert.viol.toExponential(1)}).${ayuda('cert')}</div>
+  <div class="alert ok prod"><b>${T('✓ Esta es la dieta más barata posible','✓ This is the cheapest possible diet')}</b> ${T('con tus ingredientes y tus precios, y cumple todo lo que tus pollos necesitan en esta etapa.','with your ingredients and prices, and it meets everything your birds need in this phase.')}</div>
+  <div class="alert sci ${r.cert.ok?'ok':'warn'}"><b>${r.cert.ok?'✓ Solución óptima certificada.':'Solución encontrada.'}</b> ${usados.length} ingredientes. ${r.cert.ok?'Se comprobó por dualidad fuerte que no existe otra combinación más barata que cumpla las mismas restricciones':'Revisa el certificado'} (brecha primal–dual ${r.cert.brecha.toExponential(1)}; violación máxima ${r.cert.viol.toExponential(1)}).${ayuda('cert')}</div>
   <div class="kpis">
     <div class="kpi"><div class="l">Costo por tonelada${ayuda('costoT')}</div><div class="v">${money(r.costoKg*1000)}</div><div class="s">${money(r.costoKg)} por kg</div></div>
     <div class="kpi"><div class="l">Alimento por ave en la fase${ayuda('costoAve')}</div><div class="v">${cons?money(r.costoKg*cons):'—'}</div><div class="s">${cons?fmt(cons,2)+' kg por ave':'captura el consumo (Bloque 2)'}</div></div>
     <div class="kpi"><div class="l">Costo de alimento / kg ganado${ayuda('costoKgGan')}</div><div class="v">${cons&&gan?money(r.costoKg*cons/gan):'—'}</div><div class="s">conversión ${cons&&gan?fmt(cons/gan,2):'—'}</div></div>
     <div class="kpi"><div class="l">Alimento para el lote${ayuda('loteAlim')}</div><div class="v">${totalKg?fmt(totalKg/1000,1)+' t':'—'}</div><div class="s">${totalKg?fmt(S.cond.aves,0)+' aves · '+money(r.costoKg*totalKg):''}</div></div>
   </div>
+  <div class="card prod"><h3>${T('Qué significa para tu granja','What it means for your farm')}</h3>
+    <ul class="granja">${granja.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+  <div class="card prod"><div class="row between"><h3 style="margin:0">${T('Hoja de mezclado','Mixing sheet')} · ${T('bache de','batch of')} ${fmt(lote,0)} kg${ayuda('bache')}</h3><button class="btn ghost sm no-print" onclick="window.print()">🖨 ${T('Imprimir','Print')}</button></div>
+    <p class="small muted" style="margin:6px 0 0">${T('Marca cada ingrediente conforme lo pesas. Los que entran a menos de 0.5 % mézclalos antes con un poco de maíz molido (premezcla) para que se repartan bien.','Tick each ingredient as you weigh it. Mix those below 0.5 % with a little ground corn first (premix) so they spread evenly.')}</p>
+    <div class="mezcla">${usados.map(x=>{ const kg=x.pct/100*lote; return `<label><span><input type="checkbox">${esc(nombre(x))}</span><b>${fmt(kg, kg<1?3:(kg<10?2:1))} kg</b></label>`; }).join('')}</div>
+    <p class="small muted" style="margin:0">${T('Total','Total')}: <b>${fmt(lote,0)} kg</b> · ${T('costo del bache','batch cost')}: <b>${money(r.costoKg*lote)}</b></p></div>
   <div class="card"><h3>Fórmula</h3><div class="tbl"><table>
     <thead><tr><th>Ingrediente</th><th class="r">%</th><th style="width:22%"></th><th class="r">kg por bache de ${fmt(lote,0)} kg</th><th class="r">${esc(S.moneda)}/kg</th><th class="r">Aporte al costo ${esc(S.moneda)}/t</th></tr></thead>
     <tbody>${usados.map(x=>`<tr><td>${esc(x.nombre)}</td><td class="r"><b>${fmt(x.pct,3)}</b></td><td><div class="bar-h" style="width:${(x.pct/maxPct*100).toFixed(1)}%"></div></td><td class="r">${fmt(x.pct/100*lote,2)}</td><td class="r">${fmt(x.precio,2)}</td><td class="r">${fmt(x.pct*x.precio*10,2)}</td></tr>`).join('')}
     <tr class="tot"><td>Total</td><td class="r">${fmt(usados.reduce((a,x)=>a+x.pct,0),3)}</td><td></td><td class="r">${fmt(lote,2)}</td><td></td><td class="r">${fmt(r.costoKg*1000,2)}</td></tr></tbody></table></div></div>
   <div class="card"><h3>Aporte nutricional</h3>${tablaNutrientes(r.nutr, r.contexto.req, r.base, r.restr)}</div>
   <div class="card"><h3>Indicadores de calidad</h3>${tablaIndicadores(r.nutr)}</div>
-  <div class="card"><h3>Análisis de sensibilidad</h3><div class="grid g2">
+  <div class="card"><h3><span class="sci">Análisis de sensibilidad</span><span class="prod">¿Qué ingredientes conviene vigilar?</span></h3><div class="grid g2">
     <div><h4 style="margin-top:0">Ingredientes no usados · precio de entrada${ayuda('entrada')}</h4>
     ${noUsados.length?`<div class="tbl"><table><thead><tr><th>Ingrediente</th><th class="r">Precio actual</th><th class="r">Entraría a</th></tr></thead><tbody>
     ${noUsados.map(x=>`<tr><td>${esc(x.nombre)}</td><td class="r">${fmt(x.precio,2)}</td><td class="r">${x.reducido>1e-6&&x.precio-x.reducido>0?'≤ '+fmt(x.precio-x.reducido,2):'—'}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted small">Todos los ingredientes seleccionados entraron a la fórmula.</p>'}</div>
-    <div><h4 style="margin-top:0">Ingredientes en su límite de inclusión${ayuda('limEf')}</h4>
+    <div class="sci"><h4 style="margin-top:0">Ingredientes en su límite de inclusión${ayuda('limEf')}</h4>
     ${limIng.length?`<div class="tbl"><table><thead><tr><th>Límite</th><th class="r">Efecto de +1 % /t</th></tr></thead><tbody>
     ${limIng.map(x=>`<tr><td>${esc(x.etiqueta)}</td><td class="r">${money(10*x.dual)}</td></tr>`).join('')}</tbody></table></div><p class="small muted">Negativo = relajar ese límite abarataría la dieta.</p>`:'<p class="muted small">Ningún ingrediente quedó topado en su límite.</p>'}</div>
-  </div></div>`;
+  </div></div>
+  <div class="card sci"><h3>${T('Modelo matemático y reproducibilidad','Mathematical model and reproducibility')}${ayuda('cert')}</h3>
+    <div class="modelo">min&nbsp; <i>Z</i> = Σ<sub><i>i</i></sub> <i>c<sub>i</sub></i> <i>x<sub>i</sub></i><br>
+      s.&nbsp;a.&nbsp; Σ<sub><i>i</i></sub> <i>x<sub>i</sub></i> = 100<br>
+      Σ<sub><i>i</i></sub> <i>a<sub>ij</sub></i> <i>x<sub>i</sub></i> ≥ 100·<i>b<sub>j</sub></i><sup>min</sup> &nbsp;·&nbsp; Σ<sub><i>i</i></sub> <i>a<sub>ij</sub></i> <i>x<sub>i</sub></i> ≤ 100·<i>b<sub>j</sub></i><sup>max</sup> &nbsp; ∀ <i>j</i><br>
+      <i>l<sub>i</sub></i> ≤ <i>x<sub>i</sub></i> ≤ <i>u<sub>i</sub></i>, &nbsp; <i>x<sub>i</sub></i> ≥ 0</div>
+    <p class="small muted">${T('<i>x<sub>i</sub></i>: inclusión del ingrediente <i>i</i> (%); <i>c<sub>i</sub></i>: precio por kg; <i>a<sub>ij</sub></i>: contenido del nutriente <i>j</i> en el ingrediente <i>i</i> (base tal como se ofrece, AA en base ','<i>x<sub>i</sub></i>: inclusion of ingredient <i>i</i> (%); <i>c<sub>i</sub></i>: price per kg; <i>a<sub>ij</sub></i>: content of nutrient <i>j</i> in ingredient <i>i</i> (as-fed, AA on a ')}${r.base==='dig'?T('digestible estandarizada','standardized digestible'):'total'}); <i>b<sub>j</sub></i>: ${T('requerimiento','requirement')}; <i>l<sub>i</sub></i>, <i>u<sub>i</sub></i>: ${T('límites de inclusión. Resuelto con símplex de dos fases (regla de Bland); optimalidad verificada por dualidad fuerte.','inclusion limits. Solved by two-phase simplex (Bland’s rule); optimality verified by strong duality.')}</p>
+    <div class="kpis">
+      <div class="kpi"><div class="l">${T('Variables','Variables')}</div><div class="v">${r.modelo?r.modelo.n:'—'}</div><div class="s">${T('ingredientes','ingredients')}</div></div>
+      <div class="kpi"><div class="l">${T('Restricciones','Constraints')}</div><div class="v">${r.modelo?r.modelo.m:'—'}</div><div class="s">${r.restr.filter(x=>x.activa).length} ${T('activas','binding')}</div></div>
+      <div class="kpi"><div class="l">${T('Pivoteos símplex','Simplex pivots')}</div><div class="v">${r.modelo&&r.modelo.piv!=null?r.modelo.piv:'—'}</div><div class="s">${T('fases I y II','phases I and II')}</div></div>
+      <div class="kpi"><div class="l">${T('Brecha primal–dual','Primal–dual gap')}</div><div class="v" style="font-size:20px">${r.cert.brecha.toExponential(1)}</div><div class="s">${T('violación','violation')} ${r.cert.viol.toExponential(1)} · ${T('dual','dual')} ${(r.cert.dualViol||0).toExponential(1)}</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div><h4 style="margin-top:0">${T('Precios sombra (restricciones activas)','Shadow prices (binding constraints)')}${ayuda('marg')}</h4>
+      <div class="tbl"><table><thead><tr><th>${T('Restricción','Constraint')}</th><th class="r">∂Z/∂b · ${esc(S.moneda)}/t</th></tr></thead><tbody>
+      ${r.restr.filter(x=>x.activa && x.tipo!=='suma').map(x=>`<tr><td>${esc(x.etiqueta)}</td><td class="r">${fmt(Math.abs(x.dual)<1e-9?0:(x.tipo==='nut'?1000*x.dual:10*x.dual), 3)}</td></tr>`).join('') || `<tr><td colspan="2" class="muted">—</td></tr>`}</tbody></table></div>
+      <p class="tiny muted">${T('Nutrientes: cambio del costo por tonelada por unidad del requerimiento (1 kcal/kg o 1 punto %). Ingredientes: por 1 punto % del límite.','Nutrients: change in cost per tonne per unit of requirement (1 kcal/kg or 1 % point). Ingredients: per 1 % point of the limit.')}</p></div>
+      <div><h4 style="margin-top:0">${T('Costos reducidos','Reduced costs')}${ayuda('entrada')}</h4>
+      <div class="tbl"><table><thead><tr><th>${T('Ingrediente','Ingredient')}</th><th class="r">x (%)</th><th class="r">d · ${esc(S.moneda)}/t</th></tr></thead><tbody>
+      ${r.formula.map(x=>`<tr><td>${esc(nombre(x))}</td><td class="r">${fmt(x.pct,3)}</td><td class="r">${fmt(10*(x.reducido||0),3)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="tiny muted">${T('Aumento del costo por tonelada al forzar 1 punto % de un ingrediente que no está en la base.','Increase in cost per tonne when forcing 1 % point of a non-basic ingredient.')}</p></div>
+    </div>
+    <div class="row" style="margin-top:6px"><button class="btn ghost sm" id="jsonModelo">⬇ ${T('Modelo y solución (JSON)','Model and solution (JSON)')}</button><span class="small muted">${T('Incluye matriz, precios, límites, requerimientos y solución para reproducir el cálculo.','Includes matrix, prices, limits, requirements and solution to reproduce the calculation.')}</span></div>
+  </div>
+`;
+  const jb = $('#jsonModelo'); if(jb) jb.addEventListener('click',()=>{
+    const sel = S.ingredientes.filter(i=>S.sel[i.id]).map(i=>({id:i.id, nombre:tx(i.nombre), precio:i.precio, min:i.min, max:i.max, comp:i.comp}));
+    descargar(slug()+'_modelo.json', JSON.stringify({software:CONFIG.app+' '+CONFIG.version, doi:CONFIG.doi||null, fecha:r.fecha, genetica:S.genetica, sexo:S.sexo, fase:S.fase, base:r.base, requerimientos:r.contexto.req, ingredientes:sel, solucion:{costoKg:r.costoKg, formula:r.formula, nutrientes:r.nutr, restricciones:r.restr, certificado:r.cert, modelo:r.modelo}}, null, 1), 'application/json');
+  });
 }
 function pintarEvaluacion(){
   const box = $('#resEval'); if(!box) return;
@@ -1449,9 +1552,14 @@ function renderInforme(el){
   if(r && r.ok){
     const usados = r.formula.filter(x=>x.pct>1e-6).sort((a,b)=>b.pct-a.pct);
     const lim = r.restr.filter(x=>x.tipo==='nut'&&x.activa).map(x=>NUT[x.k].n.toLowerCase());
+    const textoProd = T(
+      `Dieta para pollos <b>${esc(g.nombre)}</b> (${esc(SEXOS[S.sexo].n.toLowerCase())}), etapa de <b>${esc(f.nombre.toLowerCase())}</b> (${esc(f.dias)}). Cuesta <b>${money(r.costoKg*1000)} por tonelada</b> (${money(r.costoKg)} por kg) y aporta ${fmt(r.nutr.EM,0)} kcal/kg de energía y ${fmt(r.nutr.PC,1)} % de proteína. FormulAves la calculó para que sea la más barata posible con tus ingredientes y precios, cumpliendo lo que recomienda la tabla de la línea${S.reqEditado?' con tus ajustes':''}. Revísala con tu nutriólogo antes de fabricarla.`,
+      `Diet for <b>${esc(g.nombre)}</b> broilers (${esc(SEXOS[S.sexo].n.toLowerCase())}), <b>${esc(f.nombre.toLowerCase())}</b> phase (${esc(f.dias)}). It costs <b>${money(r.costoKg*1000)} per tonne</b> (${money(r.costoKg)} per kg) and supplies ${fmt(r.nutr.EM,0)} kcal/kg of energy and ${fmt(r.nutr.PC,1)} % protein. FormulAves computed it to be the cheapest possible with your ingredients and prices while meeting the line’s recommended table${S.reqEditado?' with your adjustments':''}. Review it with your nutritionist before mixing.`);
     resumen = `<div class="card"><h2 style="margin:0 0 4px">${esc(S.proyecto.nombre||'Dieta para pollo de engorda')}</h2>
       <p class="muted small" style="margin-top:0">${S.proyecto.granja?esc(S.proyecto.granja)+' · ':''}${S.proyecto.autor?esc(S.proyecto.autor)+' · ':''}${new Date(r.fecha).toLocaleDateString('es-MX')}</p>
-      <p style="max-width:88ch">Se formuló una dieta de mínimo costo para pollo de engorda <b>${esc(g.nombre)}</b>, ${esc(SEXOS[S.sexo].n.toLowerCase())}, en la fase de <b>${esc(f.nombre.toLowerCase())}</b> (${esc(f.dias)}), mediante programación lineal (método símplex en dos fases; optimalidad verificada por dualidad fuerte). Los requerimientos se tomaron de ${esc(g.fuente)}${S.reqEditado?' con modificaciones del usuario':''}, con aminoácidos en base ${r.base==='dig'?'digestible estandarizada':'total'}. La composición de los ingredientes proviene de Rostagno et al. (2017), FEDNA (2019) y NRC (1994)${S.ingredientes.some(i=>i.custom)?', además de ingredientes capturados por el usuario':''}. La dieta cuesta <b>${money(r.costoKg*1000)} por tonelada</b>, aporta ${fmt(r.nutr.EM,0)} kcal/kg de EMAn y ${fmt(r.nutr.PC,1)} % de proteína cruda. Restricciones limitantes: ${lim.length?esc(lim.join(', ')):'ninguna de nutrientes'}.</p>
+      <p class="sci" style="max-width:88ch">Se formuló una dieta de mínimo costo para pollo de engorda <b>${esc(g.nombre)}</b>, ${esc(SEXOS[S.sexo].n.toLowerCase())}, en la fase de <b>${esc(f.nombre.toLowerCase())}</b> (${esc(f.dias)}), mediante programación lineal (método símplex en dos fases; optimalidad verificada por dualidad fuerte). Los requerimientos se tomaron de ${esc(g.fuente)}${S.reqEditado?' con modificaciones del usuario':''}, con aminoácidos en base ${r.base==='dig'?'digestible estandarizada':'total'}. La composición de los ingredientes proviene de Rostagno et al. (2017), FEDNA (2019) y NRC (1994)${S.ingredientes.some(i=>i.custom)?', además de ingredientes capturados por el usuario':''}. La dieta cuesta <b>${money(r.costoKg*1000)} por tonelada</b>, aporta ${fmt(r.nutr.EM,0)} kcal/kg de EMAn y ${fmt(r.nutr.PC,1)} % de proteína cruda. Restricciones limitantes: ${lim.length?esc(lim.join(', ')):'ninguna de nutrientes'}.</p>
+      <p class="prod" style="max-width:88ch">${textoProd}</p>
+      <p class="small muted sci" style="max-width:88ch">Cítese el software como: ${esc(CONFIG.autor)} (${CONFIG.anio}). <i>${CONFIG.app}: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda</i> (Versión ${CONFIG.version}) [Software]. ${CONFIG.doi?'https://doi.org/'+CONFIG.doi:esc(CONFIG.repo)}</p>
       <div class="tbl"><table><thead><tr><th>Ingrediente</th><th class="r">%</th><th class="r">kg / t</th></tr></thead><tbody>
       ${usados.map(x=>`<tr><td>${esc(x.nombre)}</td><td class="r">${fmt(x.pct,3)}</td><td class="r">${fmt(x.pct*10,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
   }
@@ -1542,6 +1650,12 @@ function renderValidacion(el){
     <div class="kpis" style="margin:0">${Object.entries(res).map(([k,v])=>`<div class="kpi"><div class="l">${etiquetas[k]}</div><div class="v">${fmt(v.mape,1)} %</div><div class="s">${v.n} comparaciones · máx. ${fmt(v.max,1)} %</div></div>`).join('')}
       <div class="kpi"><div class="l">Prueba del optimizador${ayuda('reform')}</div><div class="v">${opt.igual} / ${opt.n}</div><div class="s">fórmulas publicadas reencontradas exactamente · ${opt.cert} con certificado de optimalidad</div></div></div>
   </div>
+  <div class="card prod"><h3>${T('¿Puedo confiar en FormulAves?','Can I trust FormulAves?')}</h3><ul class="granja">
+    <li>${T(`Se reprodujeron ${VALIDACION.reduce((s,c)=>s+c.fases.length,0)} dietas de ${VALIDACION.length} artículos científicos: la energía calculada difiere en promedio <b>${fmt(res.EM.mape,1)} %</b> y la proteína <b>${fmt(res.PC.mape,1)} %</b> de lo que reportaron los investigadores.`,`${VALIDACION.reduce((s,c)=>s+c.fases.length,0)} diets from ${VALIDACION.length} scientific papers were reproduced: calculated energy differs on average by <b>${fmt(res.EM.mape,1)} %</b> and protein by <b>${fmt(res.PC.mape,1)} %</b> from what the researchers reported.`)}</li>
+    <li>${T(`En <b>${opt.igual} de ${opt.n}</b> casos la app encontró exactamente la misma fórmula que publicaron los autores.`,`In <b>${opt.igual} of ${opt.n}</b> cases the app found exactly the formula the authors published.`)}</li>
+    <li>${T('Su motor matemático dio el mismo resultado que un programa de referencia internacional en <b>400 pruebas</b>.','Its solver matched an international reference program in <b>400 tests</b>.')}</li></ul>
+    <button class="btn ghost sm" data-vista="cien" style="margin-top:10px">${T('Ver el detalle en la vista científica','See the details in the scientist view')}</button></div>
+  <div class="sci">
   <div class="card"><h3>Prueba matemática del motor de cálculo</h3>
     <p class="small" style="margin:0">Además de las dietas publicadas, el método símplex de la app se comparó con un solucionador independiente de referencia (HiGHS, en SciPy 1.17) en <b>400 problemas de formulación generados al azar</b> con las 6 tablas de requerimientos y la biblioteca de ingredientes, variando requerimientos (±8 %), ingredientes disponibles y precios. Resultado: <b>350 de 350</b> problemas con solución dieron el mismo costo mínimo (diferencia relativa máxima 5×10⁻¹⁴), los <b>50</b> problemas sin solución fueron detectados como tales por ambos, y las 350 soluciones de la app pasaron el certificado de optimalidad por dualidad.</p></div>
   <div class="opts" style="margin-bottom:18px">${VALIDACION.map(c=>`<label class="opt ${c.id===caso.id?'sel':''}"><input type="radio" name="vcaso" value="${c.id}" ${c.id===caso.id?'checked':''}><b>${c.bandera} ${esc(c.corta)}</b><small>${esc(c.pais)} · ${esc(c.linea)} · AA ${c.base==='dig'?'digestibles':'totales'}</small></label>`).join('')}</div>
@@ -1558,6 +1672,7 @@ function renderValidacion(el){
     </div>
     ${R.recup?pintarReform(R, f):'<p class="small muted">El artículo solo reporta la proteína, así que aquí solo se compara el cálculo del aporte.</p>'}
   </div>`; }).join('')}
+  </div>
   ${siguiente('validacion')}`;
   $$('input[name=vcaso]',el).forEach(r=>r.addEventListener('change',()=>{ S.valCaso=r.value; guardar(); render(); }));
 }
@@ -1643,9 +1758,23 @@ const TEORIA = [
  {id:'errores', t:'Errores frecuentes al formular', b:'', h:`
   <ul><li>Mezclar requerimientos en aminoácidos digestibles con matriz en aminoácidos totales.</li><li>Usar la EM de la grasa para adultos en dietas de iniciación.</li><li>Olvidar el aporte de Ca de la harina de carne o del fosfato.</li><li>No limitar ingredientes variables (DDGS, harinas animales).</li><li>Confiar en la tabla y no analizar los ingredientes.</li><li>Dejar el sodio sin máximo: se dispara el consumo de agua y la cama se humedece.</li></ul>`}
 ];
+const CONSEJO = {
+  fuentes:{es:'Elige la línea que realmente tienes en la granja y el sexo de tus aves. Con eso la app carga lo que recomienda la casa genética.',en:'Choose the line you actually house and the sex of your birds. The app then loads what the breeding company recommends.'},
+  energia:{es:'Escoge la etapa según la edad de tus pollos. Los valores ya vienen de la tabla; cámbialos solo si tu nutriólogo lo indica. Anota cuánto comen y cuánto ganan tus aves para conocer el costo por pollo.',en:'Pick the phase by the age of your birds. Values come from the table; change them only if your nutritionist says so. Enter how much your birds eat and gain to know the cost per bird.'},
+  ambiente:{es:'Si tu granja está a mucha altura o hace calor, aquí te decimos qué ajustar. Nada cambia hasta que tú presionas el botón.',en:'If your farm is at high altitude or it is hot, here you see what to adjust. Nothing changes until you press the button.'},
+  ingredientes:{es:'Marca solo lo que puedes comprar en tu región. Mientras más opciones tengas, más barata puede salir la dieta.',en:'Tick only what you can buy in your region. The more options, the cheaper the diet can be.'},
+  limites:{es:'Escribe el precio que pagas puesto en tu granja (con flete). Los límites evitan usar demasiado de un ingrediente riesgoso o difícil de mezclar.',en:'Enter the price you pay delivered to your farm (freight included). Limits avoid too much of a risky or hard-to-mix ingredient.'},
+  lp:{es:'Presiona Formular: la app prueba todas las combinaciones posibles y te entrega la más barata que cubre lo que tus pollos necesitan, con su hoja de mezclado.',en:'Press Formulate: the app tries every possible combination and gives you the cheapest one that covers what your birds need, with its mixing sheet.'},
+  multifase:{es:'Formula todas las etapas de una vez y conoce cuánto te cuesta alimentar a cada pollo hasta la venta.',en:'Formulate every phase at once and see what it costs to feed each bird up to market.'},
+  validacion:{es:'FormulAves se comparó con dietas publicadas por investigadores y con un programa matemático de referencia, y dio los mismos resultados. Puedes confiar en sus cálculos.',en:'FormulAves was checked against diets published by researchers and a reference mathematical solver, with matching results. You can trust its calculations.'}
+};
 function teoriaDe(ids){
+  const c = CONSEJO[ids[0]];
+  return `${c?`<div class="consejo prod">${IC_PROD}<div><div class="k">${T('En pocas palabras','In a nutshell')}</div><p>${esc(tx(c))}</p></div></div>`:''}` + teoriaSci(ids);
+}
+function teoriaSci(ids){
   const items = TEORIA.filter(t=>ids.includes(t.id));
-  return `<section class="teoria"><div class="th"><div><h2>Marco teórico</h2><p>Lo que conviene tener claro antes de decidir. Despliega la sección que necesites.</p></div><button class="btn ghost sm" data-ir="teoria">Ver todo</button></div>
+  return `<section class="teoria sci"><div class="th"><div><h2>Marco teórico</h2><p>Lo que conviene tener claro antes de decidir. Despliega la sección que necesites.</p></div><button class="btn ghost sm" data-ir="teoria">Ver todo</button></div>
     ${items.map(t=>`<details><summary>${TEORIA.indexOf(t)+1} · ${esc(t.t)}</summary><div class="tb">${t.h}</div></details>`).join('')}</section>`;
 }
 function renderTeoria(el){
@@ -1681,6 +1810,8 @@ function actualizarPill(){
   const t = $('#pillTxt'); if(t) t.textContent = `${g.nombre} · ${f?f.nombre:''}` + (S.resultado&&S.resultado.ok?` · ${money(S.resultado.costoKg*1000)}/t`:'');
 }
 function render(){
+  document.documentElement.setAttribute('data-modo', MODO);
+  $$('.modesw button').forEach(b=>{ const on=b.dataset.vista===MODO; b.classList.toggle('on',on); b.setAttribute('aria-pressed', on); });
   const b = B(S.bloque) || BLOQUES[0];
   b.render()($('#main'));
   $('#pie').innerHTML = `${CONFIG.app} ${CONFIG.version} · Plataforma local de formulación de dietas para pollo de engorda · ${esc(CONFIG.autores)} · ${CONFIG.anio}<br><span class="tiny">Herramienta de apoyo: los resultados deben ser revisados por un profesional en nutrición animal.</span>`;
@@ -1688,6 +1819,8 @@ function render(){
 }
 function irA(id){ S.visitados[S.bloque]=true; S.bloque=id; guardar(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
 document.addEventListener('click',e=>{ const t=e.target.closest('[data-ir]'); if(t){ irA(t.dataset.ir); } });
+function ponerModo(m){ MODO = m==='cien'?'cien':'prod'; try{ localStorage.setItem('formulaves_modo',MODO); }catch(e){} render(); window.scrollTo({top:0,behavior:'smooth'}); }
+document.addEventListener('click',e=>{ const t=e.target.closest('[data-vista]'); if(t){ ponerModo(t.dataset.vista); } });
 function aplicarTema(t){ if(t) document.documentElement.setAttribute('data-theme',t); else document.documentElement.removeAttribute('data-theme');
   const dark = t ? t==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; $('#btnTema').textContent = dark?'☾':'☀'; }
 $('#btnTema').addEventListener('click',()=>{ const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
