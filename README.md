@@ -1,6 +1,6 @@
 # FormulAves
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23034431.svg)](https://doi.org/10.5281/zenodo.23034431)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23094626.svg)](https://doi.org/10.5281/zenodo.23094626)
 
 **Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda.**
 
@@ -35,7 +35,7 @@ El detalle está en la pestaña **Validación** de la aplicación.
 
 ## Cómo citar
 
-Mojica-Zárate, H. T., y Barrera-Guzmán, L. A. (2026). *FormulAves: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda* (Versión 2.1.0) [Software]. https://doi.org/10.5281/zenodo.23034431
+Mojica-Zárate, H. T., y Barrera-Guzmán, L. A. (2026). *FormulAves: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda* (Versión 2.1.0) [Software]. https://doi.org/10.5281/zenodo.23094626
 
 ## Autores
 
