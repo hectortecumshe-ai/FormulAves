@@ -384,7 +384,7 @@ const CONFIG = {
   app: 'FormulAves',
   version: '2.1.0',
   anio: 2026,
-  autor: 'Mojica-Zárate, H. T., y Barrera-Guzmán, L. A.',      // autores en formato APA 7
+  autor: 'Mojica-Zárate, H. T., y Barrera-Guzmán, L. Á.',      // autores en formato APA 7
   autores: 'Héctor Tecumshé Mojica Zárate y Luis Ángel Barrera Guzmán', // nombres completos (pie de página)
   repo: 'https://github.com/hectortecumshe-ai/FormulAves',
   doi: '10.5281/zenodo.23094626'                                   // DOI de Zenodo (v2.0.0)
@@ -1154,8 +1154,8 @@ function renderInicio(el){
       <p class="muted" style="margin:0">Resolver el problema matemático de una dieta es lo fácil: cualquier programa lo hace. Lo que decide si la dieta funciona son las decisiones de alrededor: qué tabla de requerimientos usar, qué matriz de ingredientes, qué límites de inclusión, cómo ajustar por altitud o calor. FormulAves pone el argumento técnico junto al número que lo justifica, en el momento en que hay que decidir, y muestra con dietas publicadas qué tanto puedes confiar en el resultado.</p>
     </div>
     <div class="cite">
-      <div class="k">SI LA USAS EN UN TRABAJO, CÍTALA</div>
-      <p style="margin:0 0 10px" id="citaTxt">${esc(CONFIG.autor)} (${CONFIG.anio}). <i>${CONFIG.app}: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda</i> (Versión ${CONFIG.version}) [Software]. <a href="https://doi.org/${CONFIG.doi}" target="_blank" rel="noopener">https://doi.org/${CONFIG.doi}</a></p>
+      <div class="k">¿CÓMO CITARLA? (APA, 7.ª ED.)</div>
+      <p style="margin:0 0 10px" id="citaTxt">${esc(CONFIG.autor)} (${CONFIG.anio}). <i>${CONFIG.app}: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda</i> (Versión ${CONFIG.version}) [Software]. Zenodo. <a href="https://doi.org/${CONFIG.doi}" target="_blank" rel="noopener">https://doi.org/${CONFIG.doi}</a></p>
       <button class="btn ghost sm" id="copiarCita">⧉ Copiar referencia</button>
     </div>
   </section>
@@ -1588,7 +1588,7 @@ function renderInforme(el){
       <p class="muted small" style="margin-top:0">${S.proyecto.granja?esc(S.proyecto.granja)+' · ':''}${S.proyecto.autor?esc(S.proyecto.autor)+' · ':''}${new Date(r.fecha).toLocaleDateString('es-MX')}</p>
       <p class="sci" style="max-width:88ch">Se formuló una dieta de mínimo costo para pollo de engorda <b>${esc(g.nombre)}</b>, ${esc(SEXOS[S.sexo].n.toLowerCase())}, en la fase de <b>${esc(f.nombre.toLowerCase())}</b> (${esc(f.dias)}), mediante programación lineal (método símplex en dos fases; optimalidad verificada por dualidad fuerte). Los requerimientos se tomaron de ${esc(g.fuente)}${S.reqEditado?' con modificaciones del usuario':''}, con aminoácidos en base ${r.base==='dig'?'digestible estandarizada':'total'}. La composición de los ingredientes proviene de Rostagno et al. (2017), FEDNA (2019) y NRC (1994)${S.ingredientes.some(i=>i.custom)?', además de ingredientes capturados por el usuario':''}. La dieta cuesta <b>${money(r.costoKg*1000)} por tonelada</b>, aporta ${fmt(r.nutr.EM,0)} kcal/kg de EMAn y ${fmt(r.nutr.PC,1)} % de proteína cruda. Restricciones limitantes: ${lim.length?esc(lim.join(', ')):'ninguna de nutrientes'}.</p>
       <p class="prod" style="max-width:88ch">${textoProd}</p>
-      <p class="small muted sci" style="max-width:88ch">Cítese el software como: ${esc(CONFIG.autor)} (${CONFIG.anio}). <i>${CONFIG.app}: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda</i> (Versión ${CONFIG.version}) [Software]. ${CONFIG.doi?'https://doi.org/'+CONFIG.doi:esc(CONFIG.repo)}</p>
+      <p class="small muted sci" style="max-width:88ch">Cómo citarla (APA, 7.ª ed.): ${esc(CONFIG.autor)} (${CONFIG.anio}). <i>${CONFIG.app}: Plataforma guiada para la formulación de dietas de mínimo costo para pollo de engorda</i> (Versión ${CONFIG.version}) [Software]. Zenodo. ${CONFIG.doi?'https://doi.org/'+CONFIG.doi:esc(CONFIG.repo)}</p>
       <div class="tbl"><table><thead><tr><th>Ingrediente</th><th class="r">%</th><th class="r">kg / t</th></tr></thead><tbody>
       ${usados.map(x=>`<tr><td>${esc(x.nombre)}</td><td class="r">${fmt(x.pct,3)}</td><td class="r">${fmt(x.pct*10,2)}</td></tr>`).join('')}</tbody></table></div></div>`;
   }
